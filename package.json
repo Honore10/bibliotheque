@@ -1,0 +1,27 @@
+{
+  "name": "bibliotheque",
+  "version": "1.0.0",
+  "description": "Plateforme numérique pour les réservations et les emprunts des livres",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "jest --testTimeout=10000 --forceExit"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^12.6.2",
+    "express": "^4.18.2",
+    "express-rate-limit": "^8.3.0",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ]
+  }
+}
