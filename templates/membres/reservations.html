@@ -1,0 +1,55 @@
+{% extends "base_minimal.html" %}
+{% block title %}Mes Réservations{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <aside class="lg:col-span-4">
+        {% include "membres/_sidebar.html" with active="reservations" %}
+    </aside>
+
+    <section class="lg:col-span-8 space-y-6">
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-900">Mes Réservations</h1>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="divide-y divide-gray-100">
+                {% for reservation in reservations %}
+                <div class="p-5 flex items-center gap-4 hover:bg-gray-50 transition">
+                    <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-clock text-purple-600 text-xl"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-semibold text-gray-900 truncate">
+                            {{ reservation.titre_livre|default:"Livre réservé" }}
+                        </p>
+                        <p class="text-sm text-gray-500">Réservé le {{ reservation.date_reservation|default:"N/A" }}</p>
+                        {% if reservation.id_livre %}
+                        <p class="text-xs text-gray-400">Livre #{{ reservation.id_livre }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="flex items-center gap-2">
+                        {% with statut_lower=reservation.statut|default:"en_attente"|lower %}
+                        <span class="px-3 py-1.5 rounded-full text-xs font-semibold 
+                            {% if statut_lower == 'active' or statut_lower == 'en attente' or statut_lower == 'en_attente' or statut_lower == 'pending' %}bg-amber-100 text-amber-700
+                            {% elif statut_lower == 'confirmee' or statut_lower == 'confirmée' or statut_lower == 'validée' or statut_lower == 'validee' %}bg-green-100 text-green-700
+                            {% elif statut_lower == 'annulée' or statut_lower == 'annulee' or statut_lower == 'cancelled' %}bg-red-100 text-red-700
+                            {% else %}bg-gray-100 text-gray-700{% endif %}">
+                            {{ reservation.statut|default:"En attente" }}
+                        </span>
+                        {% endwith %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="p-12 text-center text-gray-500">
+                    <i class="fas fa-calendar-times text-5xl mb-4 text-gray-300"></i>
+                    <p class="text-lg">Aucune réservation</p>
+                    <a href="{% url 'home' %}" class="inline-block mt-4 px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition">
+                        Explorer le catalogue
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

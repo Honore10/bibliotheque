@@ -1,0 +1,54 @@
+{% extends "base_minimal.html" %}
+{% block title %}Gestion Catégories{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "staff/_sidebar.html" with active="categories" %}</aside>
+  <section class="lg:col-span-9 space-y-6">
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Gestion des Catégories</h1>
+          <p class="text-gray-500 mt-1">Organisez les livres par catégories</p>
+        </div>
+        <a href="{% url 'staff_category_create' %}" class="w-full sm:w-auto text-center px-5 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"><i class="fas fa-plus mr-2"></i>Nouvelle catégorie</a>
+      </div>
+    </div>
+    
+    <!-- Grille de catégories -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% for c in categories %}
+      <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-5 hover:shadow-md transition">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
+              <i class="fas fa-folder text-blue-500 text-xl"></i>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900">{{ c.nom_categorie|default:'' }}</h3>
+              <p class="text-sm text-gray-500">{{ c.nb_livres|default:0 }} livre{{ c.nb_livres|pluralize }}</p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <a href="{% url 'staff_category_edit' c.id_categorie %}" class="p-2 text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Modifier">
+              <i class="fas fa-edit"></i>
+            </a>
+            <a href="{% url 'staff_category_delete' c.id_categorie %}" class="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Supprimer">
+              <i class="fas fa-trash"></i>
+            </a>
+          </div>
+        </div>
+        {% if c.description %}
+        <p class="text-sm text-gray-500 mt-3 line-clamp-2">{{ c.description }}</p>
+        {% endif %}
+      </div>
+      {% empty %}
+      <div class="col-span-2 bg-white shadow-sm rounded-xl border border-gray-200 p-12 text-center">
+        <i class="fas fa-folder-open text-4xl text-gray-300 mb-3"></i>
+        <p class="text-gray-500">Aucune catégorie</p>
+        <a href="{% url 'staff_category_create' %}" class="text-blue-600 hover:underline mt-2 inline-block">Créer la première catégorie</a>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

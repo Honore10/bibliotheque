@@ -1,0 +1,128 @@
+{% extends "base_minimal.html" %}
+{% block title %}Mon Espace{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <!-- Sidebar User - Now 4 columns -->
+    <aside class="lg:col-span-4">
+        {% include "membres/_sidebar.html" with active="dashboard" %}
+    </aside>
+
+    <!-- Main Content - Now 8 columns -->
+    <section class="lg:col-span-8 space-y-6">
+        <!-- Welcome Banner -->
+        <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 opacity-10 transform translate-x-10 -translate-y-10">
+                <i class="fas fa-book-reader fa-10x"></i>
+            </div>
+            <div class="relative z-10">
+                <h1 class="text-3xl font-bold mb-2">Bienvenue !</h1>
+                <p class="text-amber-100 text-lg">Votre espace personnel de la bibliothèque</p>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-book text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-gray-900">{{ emprunts_actifs|default:0 }}</p>
+                        <p class="text-sm text-gray-500">Emprunts</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-clock text-purple-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-gray-900">{{ reservations_actives|default:0 }}</p>
+                        <p class="text-sm text-gray-500">Réservations</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-heart text-pink-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-gray-900">{{ favoris_count|default:0 }}</p>
+                        <p class="text-sm text-gray-500">Favoris</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-bell text-amber-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-gray-900">{{ notifications_count|default:0 }}</p>
+                        <p class="text-sm text-gray-500">Notifications</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h3 class="font-bold text-gray-900 mb-4">Actions rapides</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="{% url 'home' %}" class="flex flex-col items-center gap-2 p-4 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition text-indigo-700">
+                    <i class="fas fa-search text-2xl"></i>
+                    <span class="text-sm font-medium">Catalogue</span>
+                </a>
+                <a href="{% url 'membre_emprunts' %}" class="flex flex-col items-center gap-2 p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition text-blue-700">
+                    <i class="fas fa-book-reader text-2xl"></i>
+                    <span class="text-sm font-medium">Mes emprunts</span>
+                </a>
+                <a href="{% url 'membre_reservations' %}" class="flex flex-col items-center gap-2 p-4 bg-purple-50 hover:bg-purple-100 rounded-xl transition text-purple-700">
+                    <i class="fas fa-calendar-plus text-2xl"></i>
+                    <span class="text-sm font-medium">Réservations</span>
+                </a>
+                <a href="{% url 'membre_favoris' %}" class="flex flex-col items-center gap-2 p-4 bg-pink-50 hover:bg-pink-100 rounded-xl transition text-pink-700">
+                    <i class="fas fa-heart text-2xl"></i>
+                    <span class="text-sm font-medium">Favoris</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-100">
+                <h3 class="font-bold text-gray-900">Activité récente</h3>
+            </div>
+            <div class="divide-y divide-gray-100">
+                {% for emprunt in emprunts_recents %}
+                <div class="p-4 flex items-center gap-4 hover:bg-gray-50 transition">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-book text-blue-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-medium text-gray-900">
+                            {{ emprunt.titre_livre|default:"Livre" }}
+                        </p>
+                        <p class="text-sm text-gray-500">Emprunté le {{ emprunt.date_emprunt|default:"N/A" }}</p>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-medium 
+                        {% if emprunt.statut == 'En cours' %}bg-green-100 text-green-700
+                        {% elif emprunt.statut == 'En retard' %}bg-red-100 text-red-700
+                        {% else %}bg-gray-100 text-gray-700{% endif %}">
+                        {{ emprunt.statut|default:"En cours" }}
+                    </span>
+                </div>
+                {% empty %}
+                <div class="p-8 text-center text-gray-500">
+                    <i class="fas fa-inbox text-4xl mb-2"></i>
+                    <p>Aucune activité récente</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

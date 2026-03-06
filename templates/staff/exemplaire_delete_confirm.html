@@ -1,0 +1,24 @@
+{% extends "base_minimal.html" %}
+{% block title %}Mettre hors service{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-4">{% include "staff/_sidebar.html" with active="exemplaires" %}</aside>
+  <section class="lg:col-span-8 space-y-6">
+    <div class="bg-white shadow-sm rounded-xl border border-amber-200 p-6">
+      <div class="flex items-start gap-4">
+        <div class="p-3 bg-amber-100 rounded-full"><i class="fas fa-ban text-amber-600 text-xl"></i></div>
+        <div class="flex-1">
+          <h2 class="text-xl font-bold text-gray-900">Mettre hors service</h2>
+          <p class="mt-2 text-gray-600">Voulez-vous vraiment mettre l'exemplaire <strong>{{ exemplaire.code_exemplaire|default:exemplaire.code_barre }}</strong> hors service ?</p>
+          <p class="mt-1 text-sm text-gray-500">L'exemplaire sera marqué comme "Abîmé" et ne sera plus disponible pour les emprunts.</p>
+          <form method="post" class="mt-6 flex gap-3">
+            {% csrf_token %}
+            <button type="submit" class="px-5 py-2.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700"><i class="fas fa-ban mr-2"></i>Confirmer</button>
+            <a href="{% url 'staff_exemplaires_list' %}" class="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">Annuler</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

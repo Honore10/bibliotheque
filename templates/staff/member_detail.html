@@ -1,0 +1,175 @@
+{% extends "base_minimal.html" %}
+{% block title %}Membre {{ membre.nom }}{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "staff/_sidebar.html" with active="members" %}</aside>
+  <section class="lg:col-span-9 space-y-6">
+    <!-- En-tête -->
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <span class="text-2xl font-bold text-blue-600">{{ membre.prenom|slice:":1"|upper }}{{ membre.nom|slice:":1"|upper }}</span>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">{{ membre.prenom }} {{ membre.nom }}</h1>
+            <p class="text-gray-500">ID: {{ membre.id_membre }} • Carte: {{ membre.numero_carte|default:"Non attribuée" }}</p>
+          </div>
+        </div>
+        <div class="flex gap-3 w-full sm:w-auto">
+          <a href="{% url 'staff_member_edit' membre.id_membre %}" class="flex-1 sm:flex-none px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-center">
+            <i class="fas fa-edit mr-1"></i>Modifier
+          </a>
+          <a href="{% url 'staff_member_delete' membre.id_membre %}" class="flex-1 sm:flex-none px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-center">
+            <i class="fas fa-trash mr-1"></i>Supprimer
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Informations personnelles -->
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <i class="fas fa-user text-blue-500"></i>Informations personnelles
+      </h2>
+      <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        <div><dt class="text-sm text-gray-500">Email</dt><dd class="mt-1 font-medium text-gray-900">{{ membre.email }}</dd></div>
+        <div><dt class="text-sm text-gray-500">Téléphone</dt><dd class="mt-1 font-medium text-gray-900">{{ membre.telephone|default:"-" }}</dd></div>
+        <div><dt class="text-sm text-gray-500">Date d'inscription</dt><dd class="mt-1 font-medium text-gray-900">{{ membre.date_inscription|default:"-" }}</dd></div>
+        <div>
+          <dt class="text-sm text-gray-500">Statut</dt>
+          <dd class="mt-1">
+            <span class="px-3 py-1 rounded-full text-sm font-medium 
+              {% if membre.statut_compte == 'Actif' %}bg-green-100 text-green-700
+              {% elif membre.statut_compte == 'Suspendu' %}bg-red-100 text-red-700
+              {% else %}bg-gray-100 text-gray-700{% endif %}">
+              {{ membre.statut_compte|default:"Actif" }}
+            </span>
+          </dd>
+        </div>
+        <div class="md:col-span-2"><dt class="text-sm text-gray-500">Adresse</dt><dd class="mt-1 font-medium text-gray-900">{{ membre.adresse|default:"-" }}</dd></div>
+      </dl>
+    </div>
+    
+    <!-- Emprunts du membre -->
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+      <div class="p-4 bg-gray-50 border-b flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <i class="fas fa-book-reader text-amber-500"></i>Emprunts ({{ emprunts|length }})
+        </h2>
+      </div>
+      {% if emprunts %}
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Livre</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date emprunt</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Retour prévu</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {% for e in emprunts %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4">
+              <p class="font-medium text-gray-900">{{ e.livre.titre|default:"Livre" }}</p>
+              <p class="text-xs text-gray-500">{{ e.exemplaire.code_exemplaire|default:"" }}</p>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-600">{{ e.date_emprunt|default:"-" }}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">{{ e.date_retour_prevue|default:"-" }}</td>
+            <td class="px-6 py-4">
+              <span class="px-2 py-1 rounded-full text-xs font-medium 
+                {% if e.statut == 'En retard' %}bg-red-100 text-red-700
+                {% elif e.date_retour_effective %}bg-green-100 text-green-700
+                {% else %}bg-amber-100 text-amber-700{% endif %}">
+                {% if e.date_retour_effective %}Retourné{% elif e.statut == 'En retard' %}En retard{% else %}En cours{% endif %}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="p-8 text-center text-gray-500">
+        <i class="fas fa-book-open text-3xl mb-2"></i>
+        <p>Aucun emprunt</p>
+      </div>
+      {% endif %}
+    </div>
+    
+    <!-- Réservations du membre -->
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+      <div class="p-4 bg-gray-50 border-b">
+        <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <i class="fas fa-bookmark text-purple-500"></i>Réservations ({{ reservations|length }})
+        </h2>
+      </div>
+      {% if reservations %}
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Livre</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date réservation</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {% for r in reservations %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 font-medium text-gray-900">{{ r.livre.titre|default:"Livre" }}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">{{ r.date_reservation|default:"-" }}</td>
+            <td class="px-6 py-4">
+              <span class="px-2 py-1 rounded-full text-xs font-medium 
+                {% if r.statut == 'Active' %}bg-green-100 text-green-700
+                {% elif r.statut == 'Annulée' %}bg-red-100 text-red-700
+                {% else %}bg-gray-100 text-gray-700{% endif %}">
+                {{ r.statut|default:"En attente" }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="p-8 text-center text-gray-500">
+        <i class="fas fa-bookmark text-3xl mb-2"></i>
+        <p>Aucune réservation</p>
+      </div>
+      {% endif %}
+    </div>
+    
+    <!-- Sanctions du membre -->
+    {% if sanctions %}
+    <div class="bg-white shadow-sm rounded-xl border border-red-200 overflow-hidden">
+      <div class="p-4 bg-red-50 border-b border-red-200">
+        <h2 class="text-lg font-semibold text-red-800 flex items-center gap-2">
+          <i class="fas fa-exclamation-triangle text-red-500"></i>Sanctions ({{ sanctions|length }})
+        </h2>
+      </div>
+      <table class="min-w-full divide-y divide-red-100">
+        <thead class="bg-red-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase">Type</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase">Motif</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase">Date début</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-red-600 uppercase">Date fin</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-red-100">
+          {% for s in sanctions %}
+          <tr class="hover:bg-red-50">
+            <td class="px-6 py-4 font-medium text-red-800">{{ s.type_sanction|default:"Sanction" }}</td>
+            <td class="px-6 py-4 text-sm text-red-700">{{ s.motif|default:"-" }}</td>
+            <td class="px-6 py-4 text-sm text-red-600">{{ s.date_debut|default:"-" }}</td>
+            <td class="px-6 py-4 text-sm text-red-600">{{ s.date_fin|default:"-" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    
+    <a href="{% url 'staff_members_list' %}" class="inline-flex items-center text-blue-600 hover:underline"><i class="fas fa-arrow-left mr-2"></i>Retour à la liste</a>
+  </section>
+</div>
+{% endblock %}

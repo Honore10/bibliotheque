@@ -1,0 +1,110 @@
+{% extends "base_minimal.html" %}
+{% block title %}Exemplaire {{ exemplaire.code_exemplaire }}{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "staff/_sidebar.html" with active="exemplaires" %}</aside>
+  <section class="lg:col-span-9 space-y-6">
+    <!-- En-tête -->
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex items-center gap-4">
+          <a href="{% url 'staff_exemplaires_list' %}" class="text-gray-500 hover:text-gray-700"><i class="fas fa-arrow-left"></i></a>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">{{ exemplaire.code_exemplaire }}</h1>
+            <p class="text-gray-500">ID: {{ exemplaire.id_exemplaire }}</p>
+          </div>
+        </div>
+        <div class="flex gap-3 w-full sm:w-auto">
+          <a href="{% url 'staff_exemplaire_edit' exemplaire.id_exemplaire %}" class="flex-1 sm:flex-none text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"><i class="fas fa-edit mr-1"></i>Modifier</a>
+          <a href="{% url 'staff_exemplaire_delete' exemplaire.id_exemplaire %}" class="flex-1 sm:flex-none text-center px-4 py-2 bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200 transition"><i class="fas fa-ban mr-1"></i>Hors service</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Statuts -->
+    <div class="grid grid-cols-2 gap-4">
+      <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6 text-center">
+        <p class="text-sm text-gray-500 mb-2">État physique</p>
+        <span class="px-4 py-2 rounded-full text-lg font-semibold inline-block
+          {% if exemplaire.etat == 'Disponible' %}bg-green-100 text-green-700
+          {% elif exemplaire.etat == 'Emprunte' %}bg-blue-100 text-blue-700
+          {% elif exemplaire.etat == 'Reserve' %}bg-purple-100 text-purple-700
+          {% elif exemplaire.etat == 'Abime' %}bg-red-100 text-red-700
+          {% else %}bg-gray-100 text-gray-700{% endif %}">
+          {{ exemplaire.etat|default:"Non défini" }}
+        </span>
+      </div>
+      <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6 text-center">
+        <p class="text-sm text-gray-500 mb-2">Disponibilité</p>
+        <span class="px-4 py-2 rounded-full text-lg font-semibold inline-block
+          {% if exemplaire.statut_logique == 'Disponible' %}bg-green-100 text-green-700
+          {% elif exemplaire.statut_logique == 'Emprunte' %}bg-blue-100 text-blue-700
+          {% elif exemplaire.statut_logique == 'Reserve' %}bg-purple-100 text-purple-700
+          {% elif exemplaire.statut_logique == 'Abime' %}bg-red-100 text-red-700
+          {% else %}bg-gray-100 text-gray-700{% endif %}">
+          {{ exemplaire.statut_logique|default:"Non défini" }}
+        </span>
+      </div>
+    </div>
+    
+    <!-- Informations détaillées -->
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <i class="fas fa-info-circle text-blue-500"></i>Informations détaillées
+      </h2>
+      <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        <div>
+          <dt class="text-sm text-gray-500">Code exemplaire</dt>
+          <dd class="mt-1 font-medium text-gray-900">{{ exemplaire.code_exemplaire|default:"-" }}</dd>
+        </div>
+        <div>
+          <dt class="text-sm text-gray-500">Code barre</dt>
+          <dd class="mt-1 font-mono text-gray-900">{{ exemplaire.code_barre|default:"-" }}</dd>
+        </div>
+        <div>
+          <dt class="text-sm text-gray-500">Date d'acquisition</dt>
+          <dd class="mt-1 font-medium text-gray-900">{{ exemplaire.date_acquisition|default:"-" }}</dd>
+        </div>
+        <div>
+          <dt class="text-sm text-gray-500">Localisation</dt>
+          <dd class="mt-1 font-medium text-gray-900">{{ exemplaire.localisation|default:"-" }}</dd>
+        </div>
+        <div class="md:col-span-2">
+          <dt class="text-sm text-gray-500">ID Livre associé</dt>
+          <dd class="mt-1 font-medium text-gray-900">
+            {{ exemplaire.id_livre|default:"-" }}
+            {% if exemplaire.id_livre %}
+            <a href="{% url 'staff_book_detail' exemplaire.id_livre %}" class="ml-2 text-blue-600 hover:underline text-sm">
+              <i class="fas fa-external-link-alt mr-1"></i>Voir le livre
+            </a>
+            {% endif %}
+          </dd>
+        </div>
+      </dl>
+    </div>
+    
+    <!-- Changement d'état rapide -->
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <i class="fas fa-tools text-amber-500"></i>Modifier l'état
+      </h2>
+      <form method="post" action="{% url 'staff_exemplaire_update_etat' exemplaire.id_exemplaire %}" class="flex gap-4 items-end">
+        {% csrf_token %}
+        <div class="flex-1">
+          <label class="block text-sm text-gray-600 mb-1">Nouvel état</label>
+          <select name="etat" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+            {% for etat in etat_choices %}
+            <option value="{{ etat }}" {% if etat == exemplaire.etat %}selected{% endif %}>{{ etat }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="px-5 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition">
+          <i class="fas fa-save mr-2"></i>Mettre à jour
+        </button>
+      </form>
+    </div>
+    
+    <a href="{% url 'staff_exemplaires_list' %}" class="inline-flex items-center text-blue-600 hover:underline"><i class="fas fa-arrow-left mr-2"></i>Retour à la liste</a>
+  </section>
+</div>
+{% endblock %}

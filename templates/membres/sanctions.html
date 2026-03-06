@@ -1,0 +1,62 @@
+{% extends "base_minimal.html" %}
+{% block title %}⚠️ Mes Sanctions{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <aside class="lg:col-span-4">
+        {% include "membres/_sidebar.html" with active="sanctions" %}
+    </aside>
+
+    <section class="lg:col-span-8">
+        <div class="bg-white shadow-lg rounded-2xl border border-gray-100 p-8 min-h-[500px]">
+            <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-100">
+                <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center text-red-600 shadow-sm">
+                        <i class="fas fa-gavel"></i>
+                    </span>
+                    Mes Sanctions
+                </h1>
+                <div class="text-sm px-3 py-1 bg-gray-100 rounded-full text-gray-500 font-medium">
+                    {{ sanctions|length }} sanction{{ sanctions|length|pluralize }}
+                </div>
+            </div>
+
+            {% if sanctions %}
+            <div class="space-y-4">
+                {% for sanction in sanctions %}
+                <div class="border border-gray-200 rounded-xl p-5 hover:shadow-md transition {% if sanction.statut == 'Active' %}border-l-4 border-l-red-500{% endif %}">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center {% if sanction.type_sanction == 'Amende' %}bg-amber-100 text-amber-600{% else %}bg-red-100 text-red-600{% endif %}">
+                                <i class="fas {% if sanction.type_sanction == 'Amende' %}fa-coins{% else %}fa-ban{% endif %} text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">{{ sanction.type_sanction }}</h3>
+                                <p class="text-sm text-gray-600 mt-1">{{ sanction.motif }}</p>
+                                <p class="text-xs text-gray-400 mt-2">
+                                    <i class="far fa-calendar mr-1"></i>{{ sanction.date_sanction }}
+                                    {% if sanction.montant %}
+                                    • <i class="fas fa-coins mr-1"></i>{{ sanction.montant }}€
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold {% if sanction.statut == 'Active' %}bg-red-100 text-red-700{% elif sanction.statut == 'Payée' %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-700{% endif %}">
+                            {{ sanction.statut }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="flex flex-col items-center justify-center py-16 text-gray-400">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-check-circle text-green-500 text-4xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">Aucune sanction</h3>
+                <p class="text-gray-500">Votre compte est en règle. Continuez comme ça !</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "base_minimal.html" %}
+{% block title %}Gestion Réservations{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "staff/_sidebar.html" with active="reservations" %}</aside>
+  <section class="lg:col-span-9 space-y-6">
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Gestion des Réservations</h1>
+          <p class="text-gray-500 mt-1">Gérez les réservations de livres</p>
+        </div>
+        <a href="{% url 'staff_reservation_create' %}" class="w-full sm:w-auto text-center px-5 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"><i class="fas fa-plus mr-2"></i>Nouvelle réservation</a>
+      </div>
+    </div>
+    
+    <!-- Tableau des réservations -->
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membre</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Livre</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date réservation</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {% for r in reservations %}
+          <tr class="hover:bg-gray-50 transition">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                  <span class="text-purple-600 font-semibold text-sm">{{ r.membre.prenom|slice:":1"|upper }}{{ r.membre.nom|slice:":1"|upper }}</span>
+                </div>
+                <div>
+                  <p class="font-medium text-gray-900">{{ r.membre.nom }} {{ r.membre.prenom }}</p>
+                  <p class="text-xs text-gray-500">{{ r.membre.email|default:"" }}</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <p class="text-sm font-medium text-gray-900">{{ r.livre.titre|default:"Livre" }}</p>
+              <p class="text-xs text-gray-500">{{ r.livre.auteur|default:"" }}</p>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-600">{{ r.date_reservation|default:"-" }}</td>
+            <td class="px-6 py-4">
+              {% with statut_lower=r.statut|lower %}
+              <span class="px-2 py-1 rounded-full text-xs font-medium 
+                {% if statut_lower == 'active' or statut_lower == 'en attente' or statut_lower == 'en_attente' %}bg-yellow-100 text-yellow-700
+                {% elif statut_lower == 'validée' or statut_lower == 'validee' or statut_lower == 'confirmée' %}bg-green-100 text-green-700
+                {% elif statut_lower == 'annulée' or statut_lower == 'annulee' or statut_lower == 'cancelled' %}bg-red-100 text-red-700
+                {% elif statut_lower == 'convertie' or statut_lower == 'empruntée' %}bg-blue-100 text-blue-700
+                {% elif statut_lower == 'expirée' or statut_lower == 'expiree' %}bg-gray-100 text-gray-700
+                {% else %}bg-gray-100 text-gray-700{% endif %}">
+                {{ r.statut|default:"En attente" }}
+              </span>
+              {% endwith %}
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex justify-end gap-2">
+                {% with statut_lower=r.statut|default:"en_attente"|lower %}
+                {% if statut_lower == 'active' or statut_lower == 'en attente' or statut_lower == 'en_attente' or statut_lower == 'pending' or statut_lower == 'nouvelle' %}
+                <form method="post" action="{% url 'staff_reservation_valider' r.id_reservation %}" class="inline">
+                  {% csrf_token %}
+                  <button type="submit" class="p-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition" title="Valider la réservation">
+                    <i class="fas fa-check"></i>
+                  </button>
+                </form>
+                <form method="post" action="{% url 'staff_reservation_annuler' r.id_reservation %}" class="inline">
+                  {% csrf_token %}
+                  <button type="submit" class="p-2 text-white bg-red-600 hover:bg-red-700 rounded-lg transition" title="Annuler la réservation">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </form>
+                {% elif statut_lower == 'validée' or statut_lower == 'validee' or statut_lower == 'confirmed' %}
+                <span class="text-green-600 text-sm"><i class="fas fa-check-circle mr-1"></i>Validée</span>
+                {% elif statut_lower == 'annulée' or statut_lower == 'annulee' or statut_lower == 'cancelled' %}
+                <span class="text-red-600 text-sm"><i class="fas fa-ban mr-1"></i>Annulée</span>
+                {% else %}
+                <span class="text-gray-500 text-sm">{{ r.statut }}</span>
+                {% endif %}
+                {% endwith %}
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="px-6 py-12 text-center">
+              <div class="text-gray-500">
+                <i class="fas fa-bookmark text-4xl mb-3"></i>
+                <p class="text-lg">Aucune réservation trouvée</p>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if reservations.has_other_pages %}
+    <div class="flex justify-center gap-2">
+      {% if reservations.has_previous %}
+      <a href="?page={{ reservations.previous_page_number }}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Précédent</a>
+      {% endif %}
+      <span class="px-4 py-2 bg-blue-600 text-white rounded-lg">{{ reservations.number }} / {{ reservations.paginator.num_pages }}</span>
+      {% if reservations.has_next %}
+      <a href="?page={{ reservations.next_page_number }}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Suivant</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

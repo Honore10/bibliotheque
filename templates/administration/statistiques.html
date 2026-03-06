@@ -1,0 +1,72 @@
+{% extends "base_minimal.html" %}
+{% block title %}Statistiques{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "administration/_sidebar.html" with active="statistiques" %}</aside>
+  <section class="lg:col-span-9 space-y-6">
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <h1 class="text-2xl font-bold text-gray-900">Statistiques de la Bibliothèque</h1>
+      <p class="text-gray-500 mt-1">Vue d'ensemble de l'activité</p>
+    </div>
+    
+    <!-- Stats générales -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-5 text-center">
+        <p class="text-3xl font-bold text-indigo-600">{{ stats.livres|default:0 }}</p>
+        <p class="text-sm text-gray-500 mt-1">Livres</p>
+      </div>
+      <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-5 text-center">
+        <p class="text-3xl font-bold text-green-600">{{ stats.exemplaires|default:0 }}</p>
+        <p class="text-sm text-gray-500 mt-1">Exemplaires</p>
+      </div>
+      <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-5 text-center">
+        <p class="text-3xl font-bold text-blue-600">{{ stats.membres|default:0 }}</p>
+        <p class="text-sm text-gray-500 mt-1">Membres</p>
+      </div>
+      <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-5 text-center">
+        <p class="text-3xl font-bold text-yellow-600">{{ stats.emprunts_actifs|default:0 }}</p>
+        <p class="text-sm text-gray-500 mt-1">Emprunts actifs</p>
+      </div>
+    </div>
+
+    <!-- Emprunts par mois -->
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Emprunts ce mois</h2>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="p-4 bg-green-50 rounded-lg">
+          <p class="text-2xl font-bold text-green-700">{{ stats.emprunts_mois|default:0 }}</p>
+          <p class="text-sm text-green-600">Nouveaux emprunts</p>
+        </div>
+        <div class="p-4 bg-blue-50 rounded-lg">
+          <p class="text-2xl font-bold text-blue-700">{{ stats.retours_mois|default:0 }}</p>
+          <p class="text-sm text-blue-600">Retours effectués</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top livres -->
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Livres les plus empruntés</h2>
+      <div class="space-y-3">
+        {% for livre in top_livres %}
+        <div class="flex justify-between items-center">
+          <span class="text-gray-700">{{ livre.titre }}</span>
+          <span class="text-sm text-gray-500">{{ livre.nb_emprunts }} emprunts</span>
+        </div>
+        {% empty %}
+        <p class="text-gray-500">Aucune donnée disponible</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Retards -->
+    <div class="bg-white shadow-sm rounded-xl border border-red-200 p-6">
+      <h2 class="text-lg font-semibold text-red-700 mb-4"><i class="fas fa-exclamation-triangle mr-2"></i>Emprunts en retard</h2>
+      <p class="text-3xl font-bold text-red-600">{{ stats.retards|default:0 }}</p>
+      {% if stats.retards > 0 %}
+      <a href="{% url 'staff_emprunts_list' %}?statut=retard" class="text-sm text-red-600 hover:underline mt-2 inline-block">Voir les détails →</a>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base_minimal.html" %}
+{% block title %}Détail Type Membre{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "administration/_sidebar.html" with active="types_membres" %}</aside>
+  <section class="lg:col-span-9 space-y-6">
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-users text-indigo-600 text-xl"></i>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">{{ type_membre.nom_type }}</h1>
+            <p class="text-gray-500">{{ membres_count|default:0 }} membres</p>
+          </div>
+        </div>
+        <div class="flex gap-3 w-full sm:w-auto">
+          <a href="{% url 'admin_type_membre_edit' id_type=type_membre.id_type_membre %}" class="flex-1 sm:flex-none text-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"><i class="fas fa-edit mr-1"></i>Modifier</a>
+        </div>
+      </div>
+    </div>
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        <div><dt class="text-sm text-gray-500">Nom du type</dt><dd class="mt-1 font-medium text-gray-900">{{ type_membre.nom_type }}</dd></div>
+        <div><dt class="text-sm text-gray-500">Nombre max d'emprunts</dt><dd class="mt-1 font-medium text-gray-900">{{ type_membre.nb_max_emprunt|default:"-" }}</dd></div>
+        <div><dt class="text-sm text-gray-500">Durée max d'emprunt</dt><dd class="mt-1 font-medium text-gray-900">{{ type_membre.duree_max_emprunt|default:"-" }} jours</dd></div>
+        <div><dt class="text-sm text-gray-500">Membres associés</dt><dd class="mt-1 font-medium text-gray-900">{{ membres_count|default:0 }}</dd></div>
+      </dl>
+    </div>
+    <a href="{% url 'admin_types_membres_list' %}" class="inline-flex items-center text-indigo-600 hover:underline"><i class="fas fa-arrow-left mr-2"></i>Retour à la liste</a>
+  </section>
+</div>
+{% endblock %}

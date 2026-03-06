@@ -1,0 +1,27 @@
+{% extends "base_minimal.html" %}
+{% block title %}Supprimer Type Membre{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "administration/_sidebar.html" with active="types_membres" %}</aside>
+  <section class="lg:col-span-9 space-y-6">
+    <div class="bg-white shadow-sm rounded-xl border border-red-200 p-6">
+      <div class="flex items-start gap-4">
+        <div class="p-3 bg-red-100 rounded-full"><i class="fas fa-exclamation-triangle text-red-600 text-xl"></i></div>
+        <div class="flex-1">
+          <h2 class="text-xl font-bold text-gray-900">Confirmer la suppression</h2>
+          <p class="mt-2 text-gray-600">Voulez-vous vraiment supprimer le type <strong>{{ type_membre.nom_type }}</strong> ?</p>
+          <form method="post" class="mt-6 flex flex-col sm:flex-row gap-3">
+            {% csrf_token %}
+            <button type="submit" class="px-5 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors">
+              <i class="fas fa-trash mr-2"></i>Supprimer
+            </button>
+            <a href="{% url 'admin_types_membres_list' %}" class="px-5 py-2.5 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors text-center">
+              <i class="fas fa-times mr-2"></i>Annuler
+            </a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

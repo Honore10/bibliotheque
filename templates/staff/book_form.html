@@ -1,0 +1,110 @@
+{% extends "base_minimal.html" %}
+{% block title %}{% if create %}Nouveau{% else %}Modifier{% endif %} Livre{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "staff/_sidebar.html" with active="livres" %}</aside>
+  <section class="lg:col-span-9 space-y-6">
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <div class="flex items-center gap-4">
+        <a href="{% url 'staff_books_list' %}" class="text-gray-500 hover:text-gray-700"><i class="fas fa-arrow-left"></i></a>
+        <h1 class="text-2xl font-bold text-gray-900">{% if create %}Nouveau livre{% else %}Modifier le livre{% endif %}</h1>
+      </div>
+    </div>
+    
+    {% if form.errors %}
+    <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+      <p class="text-red-700 font-medium"><i class="fas fa-exclamation-circle mr-2"></i>Veuillez corriger les erreurs ci-dessous</p>
+      {% for field, errors in form.errors.items %}
+      <p class="text-red-600 text-sm">{{ field }}: {{ errors|join:", " }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    <form method="post" enctype="multipart/form-data" class="bg-white shadow-sm rounded-xl border border-gray-200 p-6 space-y-6">
+      {% csrf_token %}
+      
+      <!-- Titre et ISBN -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Titre <span class="text-red-500">*</span></label>
+          <input type="text" name="titre" value="{{ form.titre.value|default:'' }}" required 
+            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">ISBN <span class="text-red-500">*</span></label>
+          <input type="text" name="isbn" value="{{ form.isbn.value|default:'' }}" required 
+            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+      </div>
+      
+      <!-- Auteur et Catégorie -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Auteur <span class="text-red-500">*</span></label>
+          <input type="text" name="auteur" value="{{ form.auteur.value|default:'' }}" required 
+            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Catégorie <span class="text-red-500">*</span></label>
+          {{ form.id_categorie }}
+        </div>
+      </div>
+      
+      <!-- Editeur et Langue -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Éditeur</label>
+          <input type="text" name="editeur" value="{{ form.editeur.value|default:'' }}" 
+            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Langue</label>
+          <input type="text" name="langue" value="{{ form.langue.value|default:'' }}" 
+            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+      </div>
+      
+      <!-- Année et Genre -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Année de publication</label>
+          <input type="number" name="annee_publication" value="{{ form.annee_publication.value|default:'' }}" min="1000" max="2100"
+            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Genre</label>
+          <input type="text" name="genre" value="{{ form.genre.value|default:'' }}" 
+            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+      </div>
+      
+      <!-- Description -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <textarea name="descriptions" rows="4" 
+          class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ form.descriptions.value|default:'' }}</textarea>
+      </div>
+      
+      <!-- Image URL et Couverture -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">URL de l'image</label>
+          <input type="url" name="image_url" value="{{ form.image_url.value|default:'' }}" 
+            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="https://...">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Ou télécharger une couverture</label>
+          <input type="file" name="cover" accept="image/*"
+            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+      </div>
+      
+      <!-- Boutons -->
+      <div class="flex justify-end gap-4 pt-4 border-t">
+        <a href="{% url 'staff_books_list' %}" class="px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">Annuler</a>
+        <button type="submit" class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"><i class="fas fa-save mr-2"></i>Enregistrer</button>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

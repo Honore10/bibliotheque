@@ -1,0 +1,19 @@
+{% extends "base_minimal.html" %}
+{% block title %}Supprimer Livre{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "staff/_sidebar.html" with active="livres" %}</aside>
+  <section class="lg:col-span-9">
+    <div class="bg-white shadow-sm rounded-xl border border-red-200 p-6">
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center"><i class="fas fa-exclamation-triangle text-red-600 text-xl"></i></div>
+        <div><h3 class="text-lg font-semibold">Confirmer la suppression</h3><p class="text-gray-600 mt-2">Supprimer <strong>{{ livre.titre }}</strong> ?</p></div>
+      </div>
+      <form method="post" class="mt-6 flex justify-end gap-4">{% csrf_token %}
+        <a href="{% url 'staff_books_list' %}" class="px-5 py-2.5 border border-gray-300 rounded-lg">Annuler</a>
+        <button type="submit" class="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700"><i class="fas fa-trash mr-2"></i>Supprimer</button>
+      </form>
+    </div>
+  </section>
+</div>
+{% endblock %}

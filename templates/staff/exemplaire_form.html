@@ -1,0 +1,85 @@
+{% extends "base_minimal.html" %}
+{% block title %}{% if create %}Nouvel{% else %}Modifier{% endif %} Exemplaire{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "staff/_sidebar.html" with active="exemplaires" %}</aside>
+  <section class="lg:col-span-9 space-y-6">
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <div class="flex items-center gap-4">
+        <a href="{% url 'staff_exemplaires_list' %}" class="text-gray-500 hover:text-gray-700"><i class="fas fa-arrow-left"></i></a>
+        <h1 class="text-2xl font-bold text-gray-900">{% if create %}Nouvel exemplaire{% else %}Modifier l'exemplaire{% endif %}</h1>
+      </div>
+    </div>
+    
+    {% if form.errors %}
+    <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+      <p class="text-red-700 font-medium"><i class="fas fa-exclamation-circle mr-2"></i>Veuillez corriger les erreurs</p>
+      {% for field, errors in form.errors.items %}
+      <p class="text-red-600 text-sm">{{ field }}: {{ errors|join:", " }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    <form method="post" class="bg-white shadow-sm rounded-xl border border-gray-200 p-6 space-y-6">
+      {% csrf_token %}
+      
+      <!-- Livre -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Livre <span class="text-red-500">*</span></label>
+        {{ form.id_livre }}
+        {% if form.id_livre.errors %}
+        <p class="text-red-500 text-sm mt-1">{{ form.id_livre.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+      
+      <!-- Code barre et Code exemplaire -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Code barre <span class="text-red-500">*</span></label>
+          {{ form.code_barre }}
+          {% if form.code_barre.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ form.code_barre.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Code exemplaire</label>
+          {{ form.code_exemplaire }}
+          {% if form.code_exemplaire.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ form.code_exemplaire.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+      </div>
+      
+      <!-- État et Statut -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">État physique</label>
+          {{ form.etat }}
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Statut logique</label>
+          {{ form.statut_logique }}
+        </div>
+      </div>
+      
+      <!-- Date d'acquisition et Localisation -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Date d'acquisition</label>
+          {{ form.date_acquisition }}
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Localisation</label>
+          {{ form.localisation }}
+        </div>
+      </div>
+      
+      <!-- Boutons -->
+      <div class="flex justify-end gap-4 pt-4 border-t">
+        <a href="{% url 'staff_exemplaires_list' %}" class="px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">Annuler</a>
+        <button type="submit" class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"><i class="fas fa-save mr-2"></i>Enregistrer</button>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

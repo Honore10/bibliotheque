@@ -1,0 +1,109 @@
+{% extends "base_minimal.html" %}
+{% block title %}Dashboard Staff{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <aside class="lg:col-span-3">{% include "staff/_sidebar.html" with active="dashboard" %}</aside>
+    <section class="lg:col-span-9 space-y-6">
+        <!-- Welcome Banner -->
+        <div class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 rounded-2xl p-8 text-white shadow-xl">
+            <h1 class="text-3xl font-bold mb-2">Tableau de bord</h1>
+            <p class="text-blue-100">Bienvenue dans l'espace bibliothécaire</p>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fas fa-book text-blue-600 text-xl"></i></div>
+                    <div><p class="text-2xl font-bold text-gray-900">{{ stats.total_livres|default:0 }}</p><p class="text-sm text-gray-500">Livres</p></div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center"><i class="fas fa-users text-green-600 text-xl"></i></div>
+                    <div><p class="text-2xl font-bold text-gray-900">{{ stats.total_membres|default:0 }}</p><p class="text-sm text-gray-500">Membres</p></div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center"><i class="fas fa-hand-holding text-purple-600 text-xl"></i></div>
+                    <div><p class="text-2xl font-bold text-gray-900">{{ stats.emprunts_en_cours|default:0 }}</p><p class="text-sm text-gray-500">Emprunts</p></div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center"><i class="fas fa-clock text-amber-600 text-xl"></i></div>
+                    <div><p class="text-2xl font-bold text-gray-900">{{ stats.reservations_actives|default:0 }}</p><p class="text-sm text-gray-500">Réservations</p></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Recent Emprunts -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="font-bold text-gray-900">Emprunts récents</h3>
+                    <a href="{% url 'staff_emprunts_list' %}" class="text-sm text-blue-600 hover:text-blue-700">Voir tout</a>
+                </div>
+                <div class="divide-y divide-gray-100">
+                    {% for emprunt in recent_emprunts|slice:":5" %}
+                    <div class="p-3 flex items-center gap-3 hover:bg-gray-50">
+                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-book text-blue-600 text-xs"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 truncate">Emprunt #{{ emprunt.id_emprunt }}</p>
+                            <p class="text-xs text-gray-500">{{ emprunt.date_emprunt }}</p>
+                        </div>
+                        <span class="px-2 py-1 text-xs rounded-full 
+                            {% if emprunt.statut == 'En cours' %}bg-green-100 text-green-700
+                            {% elif emprunt.statut == 'En retard' %}bg-red-100 text-red-700
+                            {% else %}bg-gray-100 text-gray-700{% endif %}">
+                            {{ emprunt.statut|default:"En cours" }}
+                        </span>
+                    </div>
+                    {% empty %}
+                    <div class="p-6 text-center text-gray-500">
+                        <i class="fas fa-inbox text-2xl mb-2"></i>
+                        <p class="text-sm">Aucun emprunt récent</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Recent Reservations -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="font-bold text-gray-900">Réservations récentes</h3>
+                    <a href="{% url 'staff_reservations_list' %}" class="text-sm text-purple-600 hover:text-purple-700">Voir tout</a>
+                </div>
+                <div class="divide-y divide-gray-100">
+                    {% for reservation in recent_reservations|slice:":5" %}
+                    <div class="p-3 flex items-center gap-3 hover:bg-gray-50">
+                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-calendar text-purple-600 text-xs"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 truncate">Réservation #{{ reservation.id_reservation }}</p>
+                            <p class="text-xs text-gray-500">{{ reservation.date_reservation }}</p>
+                        </div>
+                        <span class="px-2 py-1 text-xs rounded-full 
+                            {% if reservation.statut == 'En attente' %}bg-amber-100 text-amber-700
+                            {% elif reservation.statut == 'Confirmee' %}bg-green-100 text-green-700
+                            {% else %}bg-gray-100 text-gray-700{% endif %}">
+                            {{ reservation.statut|default:"En attente" }}
+                        </span>
+                    </div>
+                    {% empty %}
+                    <div class="p-6 text-center text-gray-500">
+                        <i class="fas fa-inbox text-2xl mb-2"></i>
+                        <p class="text-sm">Aucune réservation récente</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

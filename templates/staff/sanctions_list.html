@@ -1,0 +1,86 @@
+{% extends "base_minimal.html" %}
+{% block title %}Gestion Sanctions{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "staff/_sidebar.html" with active="sanctions" %}</aside>
+  <section class="lg:col-span-9 space-y-6">
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Gestion des Sanctions</h1>
+          <p class="text-gray-500 mt-1">Gérez les sanctions des membres</p>
+        </div>
+        <a href="{% url 'staff_sanction_create' %}" class="w-full sm:w-auto text-center px-5 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition"><i class="fas fa-plus mr-2"></i>Nouvelle sanction</a>
+      </div>
+    </div>
+    
+    <!-- Tableau des sanctions -->
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membre</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Période</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {% for s in sanctions %}
+          <tr class="hover:bg-gray-50 transition">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <i class="fas fa-user-slash text-red-500"></i>
+                </div>
+                <div>
+                  <p class="font-medium text-gray-900">{{ s.membre.nom|default:"Membre" }} {{ s.membre.prenom|default:"" }}</p>
+                  <p class="text-xs text-gray-500">ID: {{ s.id_membre|default:s.membre.id_membre }}</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span class="px-2 py-1 rounded text-sm font-medium bg-red-50 text-red-700">{{ s.type_sanction }}</span>
+            </td>
+            <td class="px-6 py-4">
+              <p class="text-sm text-gray-900">{{ s.date_debut|default:"-" }}</p>
+              <p class="text-xs text-gray-500">jusqu'au {{ s.date_fin|default:"indéterminé" }}</p>
+            </td>
+            <td class="px-6 py-4">
+              <span class="px-3 py-1 rounded-full text-xs font-medium 
+                {% if s.est_active %}bg-red-100 text-red-700
+                {% else %}bg-gray-100 text-gray-600{% endif %}">
+                {% if s.est_active %}<i class="fas fa-exclamation-circle mr-1"></i>Active{% else %}<i class="fas fa-check-circle mr-1"></i>Terminée{% endif %}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex justify-end gap-2">
+                <a href="{% url 'staff_sanction_detail' s.id_sanction %}" class="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Détails">
+                  <i class="fas fa-eye"></i>
+                </a>
+                {% if s.est_active %}
+                <a href="{% url 'staff_sanction_edit' s.id_sanction %}" class="p-2 text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Modifier">
+                  <i class="fas fa-edit"></i>
+                </a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="px-6 py-12 text-center">
+              <div class="text-gray-500">
+                <i class="fas fa-check-circle text-4xl text-green-300 mb-3"></i>
+                <p class="text-lg">Aucune sanction</p>
+                <p class="text-sm">Tous les membres sont en règle</p>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

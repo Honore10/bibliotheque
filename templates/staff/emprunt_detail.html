@@ -1,0 +1,127 @@
+{% extends "base_minimal.html" %}
+{% block title %}Détail Emprunt{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "staff/_sidebar.html" with active="emprunts" %}</aside>
+  <section class="lg:col-span-9 space-y-6">
+    <!-- En-tête -->
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex items-center gap-4">
+          <a href="{% url 'staff_emprunts_list' %}" class="text-gray-500 hover:text-gray-700"><i class="fas fa-arrow-left"></i></a>
+          <h1 class="text-2xl font-bold text-gray-900">Détail de l'emprunt #{{ emprunt.id_emprunt }}</h1>
+        </div>
+        <div class="flex flex-wrap gap-3 w-full sm:w-auto">
+          {% if not emprunt.date_retour_effective and emprunt.statut != 'Termine' %}
+          <form method="post" action="{% url 'staff_emprunt_prolonger' emprunt.id_emprunt %}" class="inline flex-1 sm:flex-none">
+            {% csrf_token %}
+            <button type="submit" class="w-full px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition"><i class="fas fa-clock mr-1"></i>Prolonger</button>
+          </form>
+          <form method="post" action="{% url 'staff_emprunt_retour' emprunt.id_emprunt %}" class="inline flex-1 sm:flex-none">
+            {% csrf_token %}
+            <button type="submit" class="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"><i class="fas fa-check mr-1"></i>Retourner</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    
+    <!-- Statut actuel -->
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500">Statut actuel</p>
+          <span class="px-4 py-2 rounded-full text-lg font-semibold inline-block mt-2
+            {% if emprunt.statut == 'En retard' or emprunt.est_en_retard %}bg-red-100 text-red-700
+            {% elif emprunt.date_retour_effective or emprunt.statut == 'Termine' %}bg-green-100 text-green-700
+            {% else %}bg-amber-100 text-amber-700{% endif %}">
+            {% if emprunt.statut == 'En retard' or emprunt.est_en_retard %}<i class="fas fa-exclamation-triangle mr-2"></i>En retard
+            {% elif emprunt.date_retour_effective or emprunt.statut == 'Termine' %}<i class="fas fa-check-circle mr-2"></i>Retourné
+            {% else %}<i class="fas fa-hourglass-half mr-2"></i>En cours{% endif %}
+          </span>
+        </div>
+        {% if emprunt.date_retour_effective %}
+        <div class="text-right">
+          <p class="text-sm text-gray-500">Retourné le</p>
+          <p class="text-lg font-semibold text-green-600">{{ emprunt.date_retour_effective }}</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    
+    <!-- Informations de l'emprunt -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Informations Membre -->
+      <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <i class="fas fa-user text-blue-500"></i>Membre emprunteur
+        </h2>
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center">
+            <span class="text-xl font-bold text-blue-600">{{ emprunt.membre.prenom|slice:":1"|upper|default:"?" }}{{ emprunt.membre.nom|slice:":1"|upper|default:"?" }}</span>
+          </div>
+          <div>
+            <p class="font-semibold text-gray-900">{{ emprunt.membre.nom|default:"Inconnu" }} {{ emprunt.membre.prenom|default:"" }}</p>
+            <p class="text-sm text-gray-500">{{ emprunt.membre.email|default:"-" }}</p>
+          </div>
+        </div>
+        {% if emprunt.membre.id_membre %}
+        <a href="{% url 'staff_member_detail' emprunt.membre.id_membre %}" class="text-blue-600 hover:underline text-sm"><i class="fas fa-external-link-alt mr-1"></i>Voir la fiche membre</a>
+        {% endif %}
+      </div>
+      
+      <!-- Informations Livre -->
+      <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <i class="fas fa-book text-green-500"></i>Livre emprunté
+        </h2>
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded shadow-sm flex items-center justify-center">
+            <i class="fas fa-book text-green-400"></i>
+          </div>
+          <div>
+            <p class="font-semibold text-gray-900">{{ emprunt.livre.titre|default:"Livre" }}</p>
+            <p class="text-sm text-gray-500">Exemplaire: {{ emprunt.exemplaire.code_exemplaire|default:"N/A" }}</p>
+            <p class="text-sm text-gray-500">Code barre: {{ emprunt.exemplaire.code_barre|default:"N/A" }}</p>
+          </div>
+        </div>
+        {% if emprunt.livre.id_livre %}
+        <a href="{% url 'staff_book_detail' emprunt.livre.id_livre %}" class="text-blue-600 hover:underline text-sm mt-3 inline-block"><i class="fas fa-external-link-alt mr-1"></i>Voir la fiche livre</a>
+        {% endif %}
+      </div>
+    </div>
+    
+    <!-- Détails dates -->
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <i class="fas fa-calendar-alt text-purple-500"></i>Dates
+      </h2>
+      <dl class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="text-center p-4 bg-gray-50 rounded-lg">
+          <dt class="text-sm text-gray-500 mb-1">Date d'emprunt</dt>
+          <dd class="text-lg font-semibold text-gray-900">{{ emprunt.date_emprunt|default:"-" }}</dd>
+        </div>
+        <div class="text-center p-4 bg-gray-50 rounded-lg">
+          <dt class="text-sm text-gray-500 mb-1">Retour prévu</dt>
+          <dd class="text-lg font-semibold {% if emprunt.statut == 'En retard' %}text-red-600{% else %}text-gray-900{% endif %}">{{ emprunt.date_retour_prevue|default:"-" }}</dd>
+        </div>
+        <div class="text-center p-4 {% if emprunt.date_retour_effective %}bg-green-50{% else %}bg-gray-50{% endif %} rounded-lg">
+          <dt class="text-sm text-gray-500 mb-1">Retour effectif</dt>
+          <dd class="text-lg font-semibold {% if emprunt.date_retour_effective %}text-green-600{% else %}text-gray-400{% endif %}">{{ emprunt.date_retour_effective|default:"En attente" }}</dd>
+        </div>
+      </dl>
+    </div>
+    
+    {% if emprunt.commentaire %}
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
+        <i class="fas fa-comment text-gray-500"></i>Commentaire
+      </h2>
+      <p class="text-gray-600">{{ emprunt.commentaire }}</p>
+    </div>
+    {% endif %}
+    
+    <a href="{% url 'staff_emprunts_list' %}" class="inline-flex items-center text-blue-600 hover:underline"><i class="fas fa-arrow-left mr-2"></i>Retour à la liste</a>
+  </section>
+</div>
+{% endblock %}

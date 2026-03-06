@@ -1,0 +1,46 @@
+{% extends "base_minimal.html" %}
+{% block title %}Mon Historique{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <aside class="lg:col-span-3">
+        {% include "membres/_sidebar.html" with active="historique" %}
+    </aside>
+
+    <section class="lg:col-span-9 space-y-6">
+        <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+            <h1 class="text-2xl font-bold text-gray-900">Mon Historique</h1>
+            <p class="text-gray-500 mt-1">Tous vos emprunts retournés</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="divide-y divide-gray-100">
+                {% for emprunt in historique %}
+                <div class="p-5 flex items-center gap-4 hover:bg-gray-50 transition">
+                    <div class="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-book text-amber-600 text-xl"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-semibold text-gray-900 truncate">
+                            {{ emprunt.titre_livre|default:"Livre" }}
+                        </p>
+                        <p class="text-sm text-gray-500">
+                            Emprunté le {{ emprunt.date_emprunt|default:"N/A" }} 
+                            {% if emprunt.date_retour_effective %}• Retourné le {{ emprunt.date_retour_effective }}{% endif %}
+                        </p>
+                    </div>
+                    <span class="px-3 py-1.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                        {{ emprunt.statut|default:"Retourné" }}
+                    </span>
+                </div>
+                {% empty %}
+                <div class="p-12 text-center text-gray-500">
+                    <i class="fas fa-history text-5xl mb-4 text-gray-300"></i>
+                    <p class="text-lg">Aucun historique</p>
+                    <p class="text-sm text-gray-400 mt-2">Vos emprunts retournés apparaîtront ici</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "base_minimal.html" %}
+{% block title %}{% if create %}Nouveau{% else %}Modifier{% endif %} Membre{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "staff/_sidebar.html" with active="membres" %}</aside>
+  <section class="lg:col-span-9 space-y-6">
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <div class="flex items-center gap-4">
+        <a href="{% url 'staff_members_list' %}" class="text-gray-500 hover:text-gray-700"><i class="fas fa-arrow-left"></i></a>
+        <h1 class="text-2xl font-bold text-gray-900">{% if create %}Nouveau membre{% else %}Modifier le membre{% endif %}</h1>
+      </div>
+    </div>
+    
+    {% if form.errors %}
+    <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+      <p class="text-red-700 font-medium"><i class="fas fa-exclamation-circle mr-2"></i>Veuillez corriger les erreurs</p>
+      {% for field, errors in form.errors.items %}
+      <p class="text-red-600 text-sm">{{ field }}: {{ errors|join:", " }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    <form method="post" class="bg-white shadow-sm rounded-xl border border-gray-200 p-6 space-y-6">
+      {% csrf_token %}
+      
+      <!-- Nom et Prénom -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nom <span class="text-red-500">*</span></label>
+          <input type="text" name="nom" value="{{ form.nom.value|default:'' }}" required 
+            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Prénom <span class="text-red-500">*</span></label>
+          <input type="text" name="prenom" value="{{ form.prenom.value|default:'' }}" required 
+            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+      </div>
+      
+      <!-- Email -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+        <input type="email" name="email" value="{{ form.email.value|default:'' }}" required 
+          class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      
+      <!-- Mot de passe et Login -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe {% if create %}<span class="text-red-500">*</span>{% else %}<span class="text-gray-400">(laisser vide pour ne pas modifier)</span>{% endif %}</label>
+          <input type="password" name="password" {% if create %}required{% endif %}
+            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="{% if create %}Mot de passe{% else %}Nouveau mot de passe{% endif %}">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Login</label>
+          <input type="text" name="login" value="{{ form.login.value|default:'' }}" 
+            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Identifiant de connexion">
+        </div>
+      </div>
+      
+      <!-- Type membre et Numéro carte -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Type de membre <span class="text-red-500">*</span></label>
+          <select name="id_type_membre" required class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="">-- Sélectionner --</option>
+            <option value="1" {% if form.id_type_membre.value == '1' or member.id_type_membre == 1 %}selected{% endif %}>Étudiant</option>
+            <option value="2" {% if form.id_type_membre.value == '2' or member.id_type_membre == 2 %}selected{% endif %}>Enseignant</option>
+            <option value="3" {% if form.id_type_membre.value == '3' or member.id_type_membre == 3 %}selected{% endif %}>Personnel</option>
+            <option value="4" {% if form.id_type_membre.value == '4' or member.id_type_membre == 4 %}selected{% endif %}>Externe</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Numéro de carte <span class="text-red-500">*</span></label>
+          <input type="text" name="numero_carte" value="{{ form.numero_carte.value|default:'' }}" required 
+            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Numéro unique">
+        </div>
+      </div>
+      
+      <!-- Téléphone et Date de naissance -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
+          <input type="tel" name="telephone" value="{{ form.telephone.value|default:'' }}" 
+            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
+          <input type="date" name="date_naissance" value="{{ form.date_naissance.value|default:'' }}" 
+            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+      </div>
+      
+      <!-- Adresse -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Adresse</label>
+        <textarea name="adresse" rows="2" 
+          class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ form.adresse.value|default:'' }}</textarea>
+      </div>
+      
+      <!-- Statut du compte -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Statut du compte</label>
+        <select name="statut_compte" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <option value="Actif" {% if form.statut_compte.value == 'Actif' or member.statut_compte == 'Actif' or not member %}selected{% endif %}>Actif</option>
+          <option value="Inactif" {% if form.statut_compte.value == 'Inactif' or member.statut_compte == 'Inactif' %}selected{% endif %}>Inactif</option>
+          <option value="Suspendu" {% if form.statut_compte.value == 'Suspendu' or member.statut_compte == 'Suspendu' %}selected{% endif %}>Suspendu</option>
+        </select>
+      </div>
+      
+      <!-- Boutons -->
+      <div class="flex justify-end gap-4 pt-4 border-t">
+        <a href="{% url 'staff_members_list' %}" class="px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">Annuler</a>
+        <button type="submit" class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"><i class="fas fa-save mr-2"></i>Enregistrer</button>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

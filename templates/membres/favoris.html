@@ -1,0 +1,55 @@
+{% extends "base_minimal.html" %}
+{% block title %}Mes Favoris{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <aside class="lg:col-span-4">
+        {% include "membres/_sidebar.html" with active="favoris" %}
+    </aside>
+
+    <section class="lg:col-span-8 space-y-6">
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-900">Mes Favoris</h1>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for fav in favoris %}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition">
+                <div class="flex gap-4">
+                    {% if fav.image_url %}
+                    <img src="{{ fav.image_url }}" alt="{{ fav.titre }}" class="w-16 h-20 object-cover rounded-lg flex-shrink-0">
+                    {% else %}
+                    <div class="w-16 h-20 bg-gradient-to-br from-pink-100 to-rose-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-book text-pink-500 text-xl"></i>
+                    </div>
+                    {% endif %}
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-semibold text-gray-900 truncate">
+                            {{ fav.titre|default:"Livre favori" }}
+                        </h3>
+                        <p class="text-sm text-gray-500">
+                            {{ fav.auteur|default:"Éditeur inconnu" }}
+                        </p>
+                        <div class="mt-2 flex gap-2">
+                            <a href="{% url 'book_detail' fav.id_livre %}" class="px-3 py-1 text-xs bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200 transition">
+                                Voir
+                            </a>
+                            <a href="{% url 'action_delete_favori' fav.id_livre %}" class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">
+                                <i class="fas fa-heart-broken mr-1"></i>Retirer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center text-gray-500">
+                <i class="fas fa-heart text-5xl mb-4 text-gray-300"></i>
+                <p class="text-lg">Aucun favori</p>
+                <a href="{% url 'home' %}" class="inline-block mt-4 px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition">
+                    Explorer le catalogue
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

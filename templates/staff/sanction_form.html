@@ -1,0 +1,84 @@
+{% extends "base_minimal.html" %}
+{% block title %}{% if create %}Nouvelle{% else %}Modifier{% endif %} Sanction{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "staff/_sidebar.html" with active="sanctions" %}</aside>
+  <section class="lg:col-span-9 space-y-6">
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <div class="flex items-center gap-4">
+        <a href="{% url 'staff_sanctions_list' %}" class="text-gray-500 hover:text-gray-700"><i class="fas fa-arrow-left"></i></a>
+        <h1 class="text-2xl font-bold text-gray-900">{% if create %}Nouvelle sanction{% else %}Modifier la sanction{% endif %}</h1>
+      </div>
+    </div>
+    
+    <form method="post" class="bg-white shadow-sm rounded-xl border border-gray-200 p-6 space-y-6">
+      {% csrf_token %}
+      
+      <!-- Membre (requis) -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Membre <span class="text-red-500">*</span></label>
+        <select name="id_membre" required class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <option value="">-- Sélectionner un membre --</option>
+          {% for m in membres %}<option value="{{ m.id_membre }}" {% if sanction.id_membre == m.id_membre %}selected{% endif %}>{{ m.prenom }} {{ m.nom }} ({{ m.email }})</option>{% endfor %}
+        </select>
+      </div>
+      
+      <!-- Emprunt (requis) -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Emprunt concerné <span class="text-red-500">*</span></label>
+        <select name="id_emprunt" required class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <option value="">-- Sélectionner un emprunt --</option>
+          {% for e in emprunts %}<option value="{{ e.id_emprunt }}" {% if sanction.id_emprunt == e.id_emprunt %}selected{% endif %}>Emprunt #{{ e.id_emprunt }} - {{ e.date_emprunt }}</option>{% endfor %}
+        </select>
+        <p class="text-xs text-gray-500 mt-1">L'emprunt à l'origine de la sanction</p>
+      </div>
+      
+      <!-- Type de sanction (requis) -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Type de sanction <span class="text-red-500">*</span></label>
+        <select name="type_sanction" required class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <option value="">-- Sélectionner un type --</option>
+          <option value="Avertissement" {% if sanction.type_sanction == 'Avertissement' %}selected{% endif %}>Avertissement</option>
+          <option value="Suspension" {% if sanction.type_sanction == 'Suspension' %}selected{% endif %}>Suspension</option>
+          <option value="Amende" {% if sanction.type_sanction == 'Amende' %}selected{% endif %}>Amende</option>
+          <option value="Exclusion" {% if sanction.type_sanction == 'Exclusion' %}selected{% endif %}>Exclusion</option>
+        </select>
+      </div>
+      
+      <!-- Statut (requis) -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Statut <span class="text-red-500">*</span></label>
+        <select name="statut" required class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <option value="Active" {% if sanction.statut == 'Active' %}selected{% endif %}>Active</option>
+          <option value="Levée" {% if sanction.statut == 'Levée' %}selected{% endif %}>Levée</option>
+          <option value="Expirée" {% if sanction.statut == 'Expirée' %}selected{% endif %}>Expirée</option>
+        </select>
+      </div>
+      
+      <!-- Date fin suspension (optionnel) -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Date fin de suspension</label>
+        <input type="date" name="date_fin_suspension" value="{{ sanction.date_fin_suspension|date:'Y-m-d'|default:'' }}" 
+          class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        <p class="text-xs text-gray-500 mt-1">Pour les suspensions uniquement</p>
+      </div>
+      
+      <!-- Montant (optionnel, pour les amendes) -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Montant (si amende)</label>
+        <div class="relative">
+          <input type="number" name="montant" value="{{ sanction.montant|default:'' }}" step="0.01" min="0"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00">
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">FCFA</span>
+        </div>
+      </div>
+      
+      <!-- Boutons -->
+      <div class="flex flex-col sm:flex-row justify-end gap-4 pt-4 border-t">
+        <a href="{% url 'staff_sanctions_list' %}" class="px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition text-center">Annuler</a>
+        <button type="submit" class="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"><i class="fas fa-gavel mr-2"></i>Enregistrer la sanction</button>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

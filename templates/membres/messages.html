@@ -1,0 +1,78 @@
+{% extends "base_minimal.html" %}
+{% block title %}Mes Messages{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <aside class="lg:col-span-4">
+        {% include "membres/_sidebar.html" with active="messages" %}
+    </aside>
+
+    <section class="lg:col-span-8 space-y-6">
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-900">Mes Messages</h1>
+        </div>
+
+        <!-- Liste des messages (Historique) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-4 border-b border-gray-100 bg-gray-50">
+                <h3 class="font-semibold text-gray-800">Historique des messages</h3>
+            </div>
+            <div class="divide-y divide-gray-100 max-h-[50vh] overflow-y-auto">
+                {% for msg in user_messages %}
+                <div class="p-5">
+                    <!-- Message envoyé -->
+                    <div class="flex gap-3 justify-end">
+                        <div class="max-w-[80%]">
+                            <div class="bg-indigo-100 rounded-xl rounded-tr-none p-4">
+                                <p class="text-gray-800">{{ msg.contenu }}</p>
+                            </div>
+                            <div class="flex items-center justify-end gap-2 mt-1">
+                                <span class="text-xs {% if msg.statut == 'Repondu' %}text-green-600{% else %}text-gray-400{% endif %}">
+                                    {% if msg.statut == 'Repondu' %}<i class="fas fa-check-double mr-1"></i>Répondu{% else %}<i class="fas fa-check mr-1"></i>Envoyé{% endif %}
+                                </span>
+                                <span class="text-xs text-gray-400">{{ msg.date_envoi|slice:":10" }}</span>
+                            </div>
+                        </div>
+                        <div class="w-8 h-8 bg-indigo-200 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-user text-indigo-600 text-sm"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Réponse du staff -->
+                    {% if msg.reponse %}
+                    <div class="flex gap-3 mt-4">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-user-shield text-green-600 text-sm"></i>
+                        </div>
+                        <div class="max-w-[80%]">
+                            <div class="bg-green-50 rounded-xl rounded-tl-none p-4 border-l-4 border-green-500">
+                                <p class="text-gray-800">{{ msg.reponse }}</p>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1 ml-2">Réponse du staff • {{ msg.date_reponse|slice:":10" }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <div class="p-12 text-center text-gray-500">
+                    <i class="fas fa-envelope-open text-5xl mb-4 text-gray-300"></i>
+                    <p class="text-lg">Aucun message</p>
+                    <p class="text-sm text-gray-400 mt-1">Envoyez un message au staff ci-dessous</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Formulaire nouveau message -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h3 class="font-semibold text-gray-900 mb-4">Envoyer un message</h3>
+            <form method="post" action="{% url 'action_send_message' %}" class="space-y-4">
+                {% csrf_token %}
+                <textarea name="contenu" rows="3" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Votre message..."></textarea>
+                <button type="submit" class="px-6 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-medium">
+                    <i class="fas fa-paper-plane mr-2"></i>Envoyer
+                </button>
+            </form>
+        </div>
+    </section>
+</div>
+{% endblock %}

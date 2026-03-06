@@ -1,0 +1,39 @@
+{% extends "base_minimal.html" %}
+{% block title %}Détail Personnel{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "administration/_sidebar.html" with active="personnel" %}</aside>
+  <section class="lg:col-span-9 space-y-6">
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <span class="text-xl font-bold text-indigo-600">{{ personnel.prenom|slice:":1"|upper }}{{ personnel.nom|slice:":1"|upper }}</span>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">{{ personnel.nom }} {{ personnel.prenom }}</h1>
+            <p class="text-gray-500">
+              <span class="px-2 py-1 rounded-full text-xs font-medium {% if personnel.role == 'Admin' %}bg-purple-100 text-purple-700{% else %}bg-blue-100 text-blue-700{% endif %}">{{ personnel.role|default:"Personnel" }}</span>
+            </p>
+          </div>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <a href="{% url 'admin_personnel_edit' id_personnel=personnel.id_bibliotecaire %}" class="flex-1 sm:flex-none text-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"><i class="fas fa-edit mr-1"></i>Modifier</a>
+          <a href="{% url 'admin_personnel_delete' id_personnel=personnel.id_bibliotecaire %}" class="flex-1 sm:flex-none text-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"><i class="fas fa-trash mr-1"></i>Supprimer</a>
+        </div>
+      </div>
+    </div>
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        <div><dt class="text-sm text-gray-500">Matricule</dt><dd class="mt-1 font-medium text-gray-900">{{ personnel.matricule|default:"-" }}</dd></div>
+        <div><dt class="text-sm text-gray-500">Nom complet</dt><dd class="mt-1 font-medium text-gray-900">{{ personnel.nom }} {{ personnel.prenom }}</dd></div>
+        <div><dt class="text-sm text-gray-500">Email</dt><dd class="mt-1 font-medium text-gray-900">{{ personnel.email }}</dd></div>
+        <div><dt class="text-sm text-gray-500">Téléphone</dt><dd class="mt-1 font-medium text-gray-900">{{ personnel.telephone|default:"-" }}</dd></div>
+        <div><dt class="text-sm text-gray-500">Login</dt><dd class="mt-1 font-medium text-gray-900">{{ personnel.login|default:"-" }}</dd></div>
+        <div><dt class="text-sm text-gray-500">Rôle</dt><dd class="mt-1 font-medium text-gray-900">{{ personnel.role|default:"-" }}</dd></div>
+      </dl>
+    </div>
+    <a href="{% url 'admin_personnel_list' %}" class="inline-flex items-center text-indigo-600 hover:underline"><i class="fas fa-arrow-left mr-2"></i>Retour à la liste</a>
+  </section>
+</div>
+{% endblock %}
