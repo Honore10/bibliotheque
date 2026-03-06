@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bibliothèque Numérique</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">Bibliothèque Numérique</span>
+      </div>
+      <nav>
+        <button class="nav-btn active" data-tab="catalogue">Catalogue</button>
+        <button class="nav-btn" data-tab="reservations">Mes Réservations</button>
+        <button class="nav-btn" data-tab="emprunts">Mes Emprunts</button>
+        <button class="nav-btn" data-tab="auth" id="auth-nav-btn">Connexion</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- CATALOGUE TAB -->
+    <section id="tab-catalogue" class="tab active">
+      <div class="section-header">
+        <h2>Catalogue des livres</h2>
+        <div class="search-bar">
+          <input type="text" id="search-input" placeholder="Rechercher par titre, auteur, genre..." />
+          <button id="search-btn">🔍 Rechercher</button>
+        </div>
+      </div>
+
+      <div id="admin-add-book-panel" class="admin-panel hidden">
+        <h3>➕ Ajouter un livre</h3>
+        <form id="add-book-form" class="book-form">
+          <div class="form-row">
+            <input type="text" name="title" placeholder="Titre *" required />
+            <input type="text" name="author" placeholder="Auteur *" required />
+          </div>
+          <div class="form-row">
+            <input type="text" name="isbn" placeholder="ISBN" />
+            <input type="text" name="genre" placeholder="Genre" />
+          </div>
+          <div class="form-row">
+            <input type="number" name="publishedYear" placeholder="Année de publication" min="1" max="2099" />
+            <input type="number" name="totalCopies" placeholder="Nombre de copies" min="1" value="1" />
+          </div>
+          <textarea name="description" placeholder="Description"></textarea>
+          <button type="submit" class="btn btn-primary">Ajouter le livre</button>
+        </form>
+      </div>
+
+      <div id="books-grid" class="books-grid">
+        <div class="loading">Chargement des livres...</div>
+      </div>
+    </section>
+
+    <!-- RESERVATIONS TAB -->
+    <section id="tab-reservations" class="tab">
+      <div class="section-header">
+        <h2>Mes Réservations</h2>
+      </div>
+      <div id="reservations-list" class="items-list">
+        <div class="auth-required">Connectez-vous pour voir vos réservations.</div>
+      </div>
+    </section>
+
+    <!-- EMPRUNTS TAB -->
+    <section id="tab-emprunts" class="tab">
+      <div class="section-header">
+        <h2>Mes Emprunts</h2>
+      </div>
+      <div id="emprunts-list" class="items-list">
+        <div class="auth-required">Connectez-vous pour voir vos emprunts.</div>
+      </div>
+    </section>
+
+    <!-- AUTH TAB -->
+    <section id="tab-auth" class="tab">
+      <div class="auth-container">
+        <!-- Login Form -->
+        <div id="login-section">
+          <h2>Connexion</h2>
+          <form id="login-form" class="auth-form">
+            <input type="email" name="email" placeholder="Adresse email" required />
+            <input type="password" name="password" placeholder="Mot de passe" required />
+            <button type="submit" class="btn btn-primary">Se connecter</button>
+            <p class="auth-toggle">Pas encore de compte ? <a href="#" id="show-register">S'inscrire</a></p>
+          </form>
+        </div>
+
+        <!-- Register Form -->
+        <div id="register-section" class="hidden">
+          <h2>Créer un compte</h2>
+          <form id="register-form" class="auth-form">
+            <input type="text" name="name" placeholder="Nom complet" required />
+            <input type="email" name="email" placeholder="Adresse email" required />
+            <input type="password" name="password" placeholder="Mot de passe (min. 6 caractères)" required minlength="6" />
+            <button type="submit" class="btn btn-primary">S'inscrire</button>
+            <p class="auth-toggle">Déjà un compte ? <a href="#" id="show-login">Se connecter</a></p>
+          </form>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profile-section" class="hidden">
+          <h2>Mon Profil</h2>
+          <div id="profile-info" class="profile-card"></div>
+          <button id="logout-btn" class="btn btn-danger">Se déconnecter</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- BOOK DETAIL MODAL -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <button class="modal-close" id="modal-close-btn">✕</button>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATIONS -->
+  <div id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
