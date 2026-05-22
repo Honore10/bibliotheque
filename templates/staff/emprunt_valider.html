@@ -1,0 +1,77 @@
+{% extends "base_minimal.html" %}
+{% block title %}Valider Emprunt{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "staff/_sidebar.html" with active="emprunts" %}</aside>
+  <section class="lg:col-span-9 space-y-6">
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <div class="flex items-center gap-4">
+        <a href="{% url 'staff_emprunts_list' %}" class="text-gray-500 hover:text-gray-700"><i class="fas fa-arrow-left"></i></a>
+        <h1 class="text-2xl font-bold text-gray-900">Valider Emprunt</h1>
+      </div>
+    </div>
+    
+    <!-- Confirmation Card -->
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6 space-y-6">
+      <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <p class="text-yellow-700"><i class="fas fa-info-circle mr-2"></i>En validant cet emprunt, le livre passera de "En attente" à "En cours" et sera marqué comme emprunté.</p>
+      </div>
+      
+      <!-- Member Information -->
+      <div>
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Informations Membre</h2>
+        <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Nom:</span>
+            <span class="font-medium text-gray-900">{{ emprunt.id_membre.nom }} {{ emprunt.id_membre.prenom }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Email:</span>
+            <span class="font-medium text-gray-900">{{ emprunt.id_membre.email }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Type Membre:</span>
+            <span class="font-medium text-gray-900">{{ emprunt.id_membre.id_type_membre.nom_type }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Book Information -->
+      <div>
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Informations Livre</h2>
+        <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Titre:</span>
+            <span class="font-medium text-gray-900">{{ emprunt.id_exemplaire.id_livre.titre }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Code Barre:</span>
+            <span class="font-medium text-gray-900">{{ emprunt.id_exemplaire.code_barre }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">État:</span>
+            <span class="font-medium text-gray-900">{{ emprunt.id_exemplaire.statut_logique }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Date Retour Prévue:</span>
+            <span class="font-medium text-gray-900">{{ emprunt.date_retour_prevue|date:"d/m/Y" }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="flex gap-4 pt-4 border-t border-gray-200">
+        <form method="post" class="flex-1">
+          {% csrf_token %}
+          <button type="submit" class="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium flex items-center justify-center gap-2">
+            <i class="fas fa-check"></i> Valider l'emprunt
+          </button>
+        </form>
+        <a href="{% url 'staff_emprunts_list' %}" class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium flex items-center justify-center gap-2">
+          <i class="fas fa-times"></i> Annuler
+        </a>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

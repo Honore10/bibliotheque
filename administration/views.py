@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import HttpResponse
-from core.api_client import ApiClient
+from core.orm_adapter import ORMAdapter
 from core.middleware import login_required
 import json
 import csv
@@ -15,7 +15,7 @@ from datetime import datetime
 @login_required(role="admin")
 def admin_dashboard(request):
     """Dashboard principal de l'administrateur"""
-    client = ApiClient(request.session.get("jwt"))
+    client = ORMAdapter(request.session.get("jwt"))
     
     # Récupérer les données de base
     livres = []
@@ -127,7 +127,7 @@ def admin_dashboard(request):
 @login_required(role="admin")
 def personnel_list(request):
     """Liste du personnel"""
-    client = ApiClient(request.session.get("jwt"))
+    client = ORMAdapter(request.session.get("jwt"))
     
     # Filtrer par rôle si spécifié
     role = request.GET.get("role", "")
@@ -145,7 +145,7 @@ def personnel_list(request):
 @login_required(role="admin")
 def personnel_create(request):
     """Créer un membre du personnel (bibliothécaire)"""
-    client = ApiClient(request.session.get("jwt"))
+    client = ORMAdapter(request.session.get("jwt"))
     
     if request.method == "POST":
         # Champs requis par l'API BibliothecaireCreate
@@ -178,7 +178,7 @@ def personnel_create(request):
 @login_required(role="admin")
 def personnel_detail(request, id_personnel):
     """Détail d'un membre du personnel"""
-    client = ApiClient(request.session.get("jwt"))
+    client = ORMAdapter(request.session.get("jwt"))
     
     personnel = client.get_personnel_member(id_personnel)
     if not personnel:
@@ -193,7 +193,7 @@ def personnel_detail(request, id_personnel):
 @login_required(role="admin")
 def personnel_edit(request, id_personnel):
     """Modifier un membre du personnel"""
-    client = ApiClient(request.session.get("jwt"))
+    client = ORMAdapter(request.session.get("jwt"))
     
     personnel = client.get_personnel_member(id_personnel)
     if not personnel:
@@ -240,7 +240,7 @@ def personnel_edit(request, id_personnel):
 @login_required(role="admin")
 def personnel_delete(request, id_personnel):
     """Supprimer un membre du personnel"""
-    client = ApiClient(request.session.get("jwt"))
+    client = ORMAdapter(request.session.get("jwt"))
     
     personnel = client.get_personnel_member(id_personnel)
     if not personnel:
@@ -263,7 +263,7 @@ def personnel_delete(request, id_personnel):
 @login_required(role="admin")
 def personnel_change_role(request, id_personnel):
     """Changer le rôle d'un membre du personnel"""
-    client = ApiClient(request.session.get("jwt"))
+    client = ORMAdapter(request.session.get("jwt"))
     
     personnel = client.get_personnel_member(id_personnel)
     if not personnel:
@@ -293,7 +293,7 @@ def personnel_change_role(request, id_personnel):
 @login_required(role="admin")
 def types_membres_list(request):
     """Liste des types de membres"""
-    client = ApiClient(request.session.get("jwt"))
+    client = ORMAdapter(request.session.get("jwt"))
     
     types_membres = client.get_types_membres() or []
     
@@ -305,7 +305,7 @@ def types_membres_list(request):
 @login_required(role="admin")
 def type_membre_create(request):
     """Créer un type de membre"""
-    client = ApiClient(request.session.get("jwt"))
+    client = ORMAdapter(request.session.get("jwt"))
     
     if request.method == "POST":
         # Champs requis par l'API TypeMembreCreate
@@ -330,7 +330,7 @@ def type_membre_create(request):
 @login_required(role="admin")
 def type_membre_detail(request, id_type):
     """Détail d'un type de membre"""
-    client = ApiClient(request.session.get("jwt"))
+    client = ORMAdapter(request.session.get("jwt"))
     
     type_membre = client.get_type_membre(id_type)
     if not type_membre:
@@ -350,7 +350,7 @@ def type_membre_detail(request, id_type):
 @login_required(role="admin")
 def type_membre_edit(request, id_type):
     """Modifier un type de membre"""
-    client = ApiClient(request.session.get("jwt"))
+    client = ORMAdapter(request.session.get("jwt"))
     
     type_membre = client.get_type_membre(id_type)
     if not type_membre:
@@ -392,66 +392,56 @@ def type_membre_delete(request, id_type):
 
 @login_required(role="admin")
 def admin_statistiques(request):
-    """Statistiques avancées pour l'admin"""
-    client = ApiClient(request.session.get("jwt"))
+    """Statistiques avancées pour l'admin - ORM"""
+    from core.models import Livre, Membre, Emprunt, Exemplaire, Categorie
     
-    # Récupérer diverses statistiques
-    stats = client.get_stats() or {}
+    # Compter les entités
+    total_livres = Livre.objects.count()
+    total_membres = Membre.objects.count()
+    total_emprunts = Emprunt.objects.count()
     
-    # Récupérer les livres pour analyse
-    livres = client.get_books() or []
-    
-    # Récupérer les emprunts pour analyse
-    emprunts = client.get_emprunts() or []
-    
-    # Récupérer les membres pour analyse
-    membres = client.get_members() or []
-    
-    # Calcul de statistiques supplémentaires
-    emprunts_en_cours = len([e for e in emprunts if e.get("statut") == "En cours"])
-    emprunts_en_retard = len([e for e in emprunts if e.get("statut") == "En retard"])
+    # Emprunts en cours et en retard
+    emprunts_en_cours = Emprunt.objects.filter(statut="En cours").count()
+    emprunts_en_retard = Emprunt.objects.filter(statut="En retard").count()
     
     # Livres par catégorie
-    categories = client.get_categories() or []
     livres_par_categorie = {}
-    for cat in categories:
-        cat_name = cat.get("nom_categorie", "Inconnue")
-        livres_par_categorie[cat_name] = len([l for l in livres if l.get("categorie", {}).get("id_categorie") == cat.get("id_categorie")])
+    for cat in Categorie.objects.all():
+        count = Livre.objects.filter(id_categorie=cat).count()
+        livres_par_categorie[cat.nom_categorie] = count
     
-    # Top 5 livres les plus empruntés (simplifié)
-    livre_emprunts = {}
-    for e in emprunts:
-        livre_id = e.get("exemplaire", {}).get("livre", {}).get("id_livre")
-        if livre_id:
-            livre_emprunts[livre_id] = livre_emprunts.get(livre_id, 0) + 1
-    
-    top_livres = sorted(livre_emprunts.items(), key=lambda x: x[1], reverse=True)[:5]
-    top_livres_details = []
-    for livre_id, count in top_livres:
-        livre = next((l for l in livres if l.get("id_livre") == livre_id), None)
-        if livre:
-            top_livres_details.append({
-                "titre": livre.get("titre"),
-                "emprunts": count,
-            })
+    # Top 5 livres les plus empruntés (via exemplaires)
+    from django.db.models import Count
+    try:
+        top_livres_ids = Exemplaire.objects.values('id_livre').annotate(count=Count('emprunt')).order_by('-count')[:5]
+        top_livres_details = []
+        for item in top_livres_ids:
+            livre = Livre.objects.filter(id_livre=item['id_livre']).first()
+            if livre:
+                top_livres_details.append({
+                    "titre": livre.titre,
+                    "emprunts": item['count'],
+                })
+    except Exception as e:
+        top_livres_details = []
     
     return render(request, "administration/statistiques.html", {
-        "stats": stats,
-        "total_livres": len(livres),
-        "total_membres": len(membres),
-        "total_emprunts": len(emprunts),
+        "stats": {},
+        "total_livres": total_livres,
+        "total_membres": total_membres,
+        "total_emprunts": total_emprunts,
         "emprunts_en_cours": emprunts_en_cours,
         "emprunts_en_retard": emprunts_en_retard,
         "livres_par_categorie": livres_par_categorie,
         "top_livres": top_livres_details,
-        "categories": categories,
+        "categories": list(Categorie.objects.all()),
     })
 
 
 @login_required(role="admin")
 def admin_export_stats(request):
     """Exporter les statistiques en CSV"""
-    client = ApiClient(request.session.get("jwt"))
+    client = ORMAdapter(request.session.get("jwt"))
     
     export_type = request.GET.get("type", "general")
     

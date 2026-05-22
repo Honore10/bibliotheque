@@ -9,119 +9,152 @@
 
     <!-- Main Content - Now 8 columns -->
     <section class="lg:col-span-8 space-y-6">
-        <!-- Welcome Banner -->
-        <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
+        <!-- Welcome Banner avec gradient multicolore -->
+        <div class="bg-gradient-to-r from-green-500 via-teal-500 to-emerald-500 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
             <div class="absolute top-0 right-0 opacity-10 transform translate-x-10 -translate-y-10">
                 <i class="fas fa-book-reader fa-10x"></i>
             </div>
             <div class="relative z-10">
                 <h1 class="text-3xl font-bold mb-2">Bienvenue !</h1>
-                <p class="text-amber-100 text-lg">Votre espace personnel de la bibliothèque</p>
+                <p class="text-green-100 text-lg">Votre espace personnel de la bibliothèque</p>
             </div>
         </div>
 
-        <!-- Stats Cards -->
+        <!-- Stats Cards avec couleurs variées -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-blue-200 hover:shadow-md transition hover-lift">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-book text-blue-600 text-xl"></i>
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
+                        <i class="fas fa-book text-white text-xl"></i>
                     </div>
                     <div>
-                        <p class="text-2xl font-bold text-gray-900">{{ emprunts_actifs|default:0 }}</p>
-                        <p class="text-sm text-gray-500">Emprunts</p>
+                        <p class="text-2xl font-bold text-blue-700">{{ emprunts_actifs|default:0 }}</p>
+                        <p class="text-sm text-blue-600">Emprunts</p>
                     </div>
                 </div>
             </div>
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-purple-200 hover:shadow-md transition hover-lift">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-clock text-purple-600 text-xl"></i>
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                        <i class="fas fa-clock text-white text-xl"></i>
                     </div>
                     <div>
-                        <p class="text-2xl font-bold text-gray-900">{{ reservations_actives|default:0 }}</p>
-                        <p class="text-sm text-gray-500">Réservations</p>
+                        <p class="text-2xl font-bold text-purple-700">{{ reservations_actives|default:0 }}</p>
+                        <p class="text-sm text-purple-600">Réservations</p>
                     </div>
                 </div>
             </div>
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-pink-200 hover:shadow-md transition hover-lift">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-heart text-pink-600 text-xl"></i>
+                    <div class="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-600 rounded-xl flex items-center justify-center shadow-md">
+                        <i class="fas fa-heart text-white text-xl"></i>
                     </div>
                     <div>
-                        <p class="text-2xl font-bold text-gray-900">{{ favoris_count|default:0 }}</p>
-                        <p class="text-sm text-gray-500">Favoris</p>
+                        <p class="text-2xl font-bold text-pink-700">{{ favoris|default:0 }}</p>
+                        <p class="text-sm text-pink-600">Favoris</p>
                     </div>
                 </div>
             </div>
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-amber-200 hover:shadow-md transition hover-lift">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-bell text-amber-600 text-xl"></i>
+                    <div class="w-12 h-12 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center shadow-md">
+                        <i class="fas fa-history text-white text-xl"></i>
                     </div>
                     <div>
-                        <p class="text-2xl font-bold text-gray-900">{{ notifications_count|default:0 }}</p>
-                        <p class="text-sm text-gray-500">Notifications</p>
+                        <p class="text-2xl font-bold text-amber-700">{{ total_historique|default:0 }}</p>
+                        <p class="text-sm text-amber-600">Historique</p>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Current Emprunts -->
+        <div class="bg-white rounded-xl shadow-sm border border-blue-200 overflow-hidden">
+            <div class="p-4 border-b border-blue-100 flex justify-between items-center">
+                <h3 class="font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Emprunts en cours</h3>
+                <a href="{% url 'membre_emprunts' %}" class="text-sm text-blue-600 hover:text-blue-700">Voir tout</a>
+            </div>
+            <div class="divide-y divide-blue-50">
+                {% for emprunt in emprunts_en_cours|slice:":3" %}
+                <div class="p-4 hover:bg-blue-50/50 transition">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-book text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-medium text-gray-900 text-sm truncate">{{ emprunt.titre }}</p>
+                            <p class="text-xs text-gray-500">Retour prévu: {{ emprunt.date_retour_prevue|default:"N/A" }}</p>
+                        </div>
+                        <span class="px-2 py-1 bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 text-xs rounded-full border border-blue-300">{{ emprunt.statut|default:"En cours" }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="p-8 text-center text-gray-500">
+                    <i class="fas fa-book-open text-3xl mb-2 text-blue-300"></i>
+                    <p class="text-sm">Aucun emprunt en cours</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Active Reservations -->
+        <div class="bg-white rounded-xl shadow-sm border border-amber-200 overflow-hidden">
+            <div class="p-4 border-b border-amber-100 flex justify-between items-center">
+                <h3 class="font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">Réservations actives</h3>
+                <a href="{% url 'membre_reservations' %}" class="text-sm text-amber-600 hover:text-amber-700">Voir tout</a>
+            </div>
+            <div class="divide-y divide-amber-50">
+                {% for reservation in reservations_en_cours|slice:":3" %}
+                <div class="p-4 hover:bg-amber-50/50 transition">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-book text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-medium text-gray-900 text-sm truncate">{{ reservation.titre }}</p>
+                            <p class="text-xs text-gray-500">Expire: {{ reservation.date_expiration|default:"N/A" }}</p>
+                        </div>
+                        <span class="px-2 py-1 bg-gradient-to-r from-amber-100 to-amber-200 text-amber-700 text-xs rounded-full border border-amber-300">{{ reservation.statut|default:"En attente" }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="p-8 text-center text-gray-500">
+                    <i class="fas fa-calendar-alt text-3xl mb-2 text-amber-300"></i>
+                    <p class="text-sm">Aucune réservation active</p>
+                </div>
+                {% endfor %}
             </div>
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h3 class="font-bold text-gray-900 mb-4">Actions rapides</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <a href="{% url 'home' %}" class="flex flex-col items-center gap-2 p-4 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition text-indigo-700">
-                    <i class="fas fa-search text-2xl"></i>
-                    <span class="text-sm font-medium">Catalogue</span>
-                </a>
-                <a href="{% url 'membre_emprunts' %}" class="flex flex-col items-center gap-2 p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition text-blue-700">
-                    <i class="fas fa-book-reader text-2xl"></i>
-                    <span class="text-sm font-medium">Mes emprunts</span>
-                </a>
-                <a href="{% url 'membre_reservations' %}" class="flex flex-col items-center gap-2 p-4 bg-purple-50 hover:bg-purple-100 rounded-xl transition text-purple-700">
-                    <i class="fas fa-calendar-plus text-2xl"></i>
-                    <span class="text-sm font-medium">Réservations</span>
-                </a>
-                <a href="{% url 'membre_favoris' %}" class="flex flex-col items-center gap-2 p-4 bg-pink-50 hover:bg-pink-100 rounded-xl transition text-pink-700">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <a href="{% url 'membre_reservations' %}" class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-6 text-white hover:shadow-lg transition hover-lift">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-plus-circle text-2xl"></i>
+                    <div>
+                        <p class="font-semibold">Réserver un livre</p>
+                        <p class="text-sm text-purple-100">Trouvez votre prochain livre</p>
+                    </div>
+                </div>
+            </a>
+            <a href="{% url 'membre_favoris' %}" class="bg-gradient-to-r from-pink-500 to-rose-500 rounded-xl p-6 text-white hover:shadow-lg transition hover-lift">
+                <div class="flex items-center gap-3">
                     <i class="fas fa-heart text-2xl"></i>
-                    <span class="text-sm font-medium">Favoris</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Recent Activity -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="p-6 border-b border-gray-100">
-                <h3 class="font-bold text-gray-900">Activité récente</h3>
-            </div>
-            <div class="divide-y divide-gray-100">
-                {% for emprunt in emprunts_recents %}
-                <div class="p-4 flex items-center gap-4 hover:bg-gray-50 transition">
-                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-book text-blue-600"></i>
+                    <div>
+                        <p class="font-semibold">Mes favoris</p>
+                        <p class="text-sm text-pink-100">{{ favoris|default:0 }} livres sauvegardés</p>
                     </div>
-                    <div class="flex-1">
-                        <p class="font-medium text-gray-900">
-                            {{ emprunt.titre_livre|default:"Livre" }}
-                        </p>
-                        <p class="text-sm text-gray-500">Emprunté le {{ emprunt.date_emprunt|default:"N/A" }}</p>
+                </div>
+            </a>
+            <a href="{% url 'membre_historique' %}" class="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl p-6 text-white hover:shadow-lg transition hover-lift">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-history text-2xl"></i>
+                    <div>
+                        <p class="font-semibold">Mon historique</p>
+                        <p class="text-sm text-blue-100">{{ total_historique|default:0 }} emprunts</p>
                     </div>
-                    <span class="px-3 py-1 rounded-full text-xs font-medium 
-                        {% if emprunt.statut == 'En cours' %}bg-green-100 text-green-700
-                        {% elif emprunt.statut == 'En retard' %}bg-red-100 text-red-700
-                        {% else %}bg-gray-100 text-gray-700{% endif %}">
-                        {{ emprunt.statut|default:"En cours" }}
-                    </span>
                 </div>
-                {% empty %}
-                <div class="p-8 text-center text-gray-500">
-                    <i class="fas fa-inbox text-4xl mb-2"></i>
-                    <p>Aucune activité récente</p>
-                </div>
-                {% endfor %}
-            </div>
+            </a>
         </div>
     </section>
 </div>

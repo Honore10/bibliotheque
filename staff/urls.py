@@ -44,6 +44,7 @@ urlpatterns = [
     path("emprunts/", views.emprunts_list, name="staff_emprunts_list"),
     path("emprunts/new/", views.emprunt_create, name="staff_emprunt_create"),
     path("emprunts/<int:id_emprunt>/", views.emprunt_detail, name="staff_emprunt_detail"),
+    path("emprunts/<int:id_emprunt>/valider/", views.emprunt_valider, name="staff_emprunt_valider"),
     path("emprunts/<int:id_emprunt>/retour/", views.emprunt_retour, name="staff_emprunt_retour"),
     path("emprunts/<int:id_emprunt>/prolonger/", views.emprunt_prolonger, name="staff_emprunt_prolonger"),
 

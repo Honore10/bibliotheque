@@ -2,18 +2,18 @@
 {% block title %}{{ book.titre|default:"Livre" }}{% endblock %}
 {% block content %}
 <div class="max-w-4xl mx-auto space-y-6">
-    <a href="{% url 'home' %}" class="inline-flex items-center text-gray-600 hover:text-amber-600 transition">
+    <a href="{% url 'home' %}" class="inline-flex items-center text-gray-600 hover:text-purple-600 transition">
         <i class="fas fa-arrow-left mr-2"></i>Retour au catalogue
     </a>
 
     {% if book %}
-    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-lg border border-purple-200 overflow-hidden">
         <div class="md:flex">
-            <div class="md:w-1/3 bg-gradient-to-br from-amber-50 to-orange-100 p-8 flex items-center justify-center">
+            <div class="md:w-1/3 bg-gradient-to-br from-purple-50 to-pink-100 p-8 flex items-center justify-center">
                 {% if book.image_url %}
                 <img src="{{ book.image_url }}" alt="{{ book.titre }}" class="max-h-64 object-contain rounded-lg shadow">
                 {% else %}
-                <i class="fas fa-book text-amber-400 text-8xl"></i>
+                <i class="fas fa-book text-purple-400 text-8xl"></i>
                 {% endif %}
             </div>
             <div class="md:w-2/3 p-8">
@@ -24,7 +24,7 @@
                 
                 <div class="flex flex-wrap gap-2 mb-6">
                     {% if book.nom_categorie %}
-                    <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm">{{ book.nom_categorie }}</span>
+                    <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">{{ book.nom_categorie }}</span>
                     {% endif %}
                     {% if book.annee_publication %}
                     <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">{{ book.annee_publication }}</span>
@@ -99,35 +99,31 @@
                 </div>
                 {% endif %}
 
-                {% if request.session.jwt %}
+                {% if request.remote_user %}
                 <div class="flex flex-wrap gap-3">
-                    <form method="post" action="{% url 'action_reserve' %}">
+                    <a href="{% url 'membre_reserver_livre' book.id_livre %}" class="px-6 py-2.5 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-full hover:shadow-lg transition font-medium {% if nb_disponibles == 0 %}opacity-50 cursor-not-allowed{% endif %}" {% if nb_disponibles == 0 %}style="pointer-events: none;"{% endif %}>
+                        <i class="fas fa-bookmark mr-2"></i>
+                        {% if nb_disponibles > 0 %}Réserver{% else %}Indisponible{% endif %}
+                    </a>
+                    <form method="post" action="{% url 'action_add_favori' %}" class="inline">
                         {% csrf_token %}
                         <input type="hidden" name="id_livre" value="{{ book.id_livre }}">
-                        <button type="submit" class="px-6 py-2.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition font-medium {% if nb_disponibles == 0 %}opacity-50 cursor-not-allowed{% endif %}" {% if nb_disponibles == 0 %}disabled{% endif %}>
-                            <i class="fas fa-calendar-plus mr-2"></i>
-                            {% if nb_disponibles > 0 %}Réserver{% else %}Aucun exemplaire disponible{% endif %}
-                        </button>
-                    </form>
-                    <form method="post" action="{% url 'action_add_favori' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="id_livre" value="{{ book.id_livre }}">
-                        <button type="submit" class="px-6 py-2.5 border border-pink-300 text-pink-600 rounded-lg hover:bg-pink-50 transition font-medium">
-                            <i class="fas fa-heart mr-2"></i>Ajouter aux favoris
+                        <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-full hover:shadow-lg transition font-medium">
+                            <i class="fas fa-heart mr-2"></i>Mettre en favoris
                         </button>
                     </form>
                 </div>
                 {% else %}
-                <a href="{% url 'login' %}" class="inline-block px-6 py-2.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition font-medium">
-                    <i class="fas fa-sign-in-alt mr-2"></i>Connectez-vous pour réserver
+                <a href="{% url 'login' %}" class="inline-block px-6 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-full hover:shadow-lg transition font-medium">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Se connecter
                 </a>
                 {% endif %}
             </div>
         </div>
     </div>
     {% else %}
-    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
-        <i class="fas fa-exclamation-triangle text-6xl text-amber-400 mb-4"></i>
+    <div class="bg-white rounded-2xl shadow-lg border border-purple-200 p-12 text-center">
+        <i class="fas fa-exclamation-triangle text-6xl text-purple-400 mb-4"></i>
         <h2 class="text-2xl font-bold text-gray-900 mb-2">Livre non trouvé</h2>
         <p class="text-gray-500">Ce livre n'existe pas ou a été supprimé.</p>
     </div>

@@ -19,7 +19,15 @@
             <a href="{% url 'staff_books_list' %}" class="text-gray-500 hover:text-gray-700"><i class="fas fa-arrow-left"></i></a>
             <h1 class="text-2xl font-bold text-gray-900">{{ livre.titre }}</h1>
           </div>
-          <p class="text-lg text-gray-600 mb-4">{{ livre.auteur|default:"Auteur inconnu" }}</p>
+          <p class="text-lg text-gray-600 mb-4">
+            {% if livre.auteurs.all %}
+              {% for a in livre.auteurs.all %}
+                {{ a.prenom }} {{ a.nom }}{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            {% else %}
+              Auteur inconnu
+            {% endif %}
+          </p>
           <div class="flex flex-wrap gap-3">
             <a href="{% url 'staff_book_edit' livre.id_livre %}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"><i class="fas fa-edit mr-2"></i>Modifier</a>
             <a href="{% url 'staff_book_delete' livre.id_livre %}" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition"><i class="fas fa-trash mr-2"></i>Supprimer</a>
@@ -35,11 +43,11 @@
       </h2>
       <dl class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div><dt class="text-sm text-gray-500">ISBN</dt><dd class="font-medium text-gray-900 font-mono">{{ livre.isbn|default:"-" }}</dd></div>
-        <div><dt class="text-sm text-gray-500">Catégorie</dt><dd class="font-medium"><span class="px-2 py-1 bg-blue-50 text-blue-700 rounded text-sm">{{ livre.categorie.nom_categorie|default:"-" }}</span></dd></div>
+        <div><dt class="text-sm text-gray-500">Catégorie</dt><dd class="font-medium"><span class="px-2 py-1 bg-blue-50 text-blue-700 rounded text-sm">{{ livre.id_categorie.nom_categorie|default:"-" }}</span></dd></div>
         <div><dt class="text-sm text-gray-500">Année</dt><dd class="font-medium text-gray-900">{{ livre.annee_publication|default:"-" }}</dd></div>
         <div><dt class="text-sm text-gray-500">Langue</dt><dd class="font-medium text-gray-900">{{ livre.langue|default:"-" }}</dd></div>
         <div><dt class="text-sm text-gray-500">Éditeur</dt><dd class="font-medium text-gray-900">{{ livre.editeur|default:"-" }}</dd></div>
-        <div><dt class="text-sm text-gray-500">Genre</dt><dd class="font-medium text-gray-900">{{ livre.genre|default:"-" }}</dd></div>
+        <div><dt class="text-sm text-gray-500">Genre</dt><dd class="font-medium text-gray-900">-</dd></div>
       </dl>
       {% if livre.descriptions %}
       <div class="mt-6 pt-6 border-t">
@@ -73,7 +81,7 @@
         <tbody class="divide-y divide-gray-200">
           {% for ex in exemplaires %}
           <tr class="hover:bg-gray-50">
-            <td class="px-6 py-4 font-medium text-gray-900">{{ ex.code_exemplaire|default:"-" }}</td>
+            <td class="px-6 py-4 font-medium text-gray-900">{{ ex.id_exemplaire|default:"-" }}</td>
             <td class="px-6 py-4 text-sm text-gray-500 font-mono">{{ ex.code_barre|default:"-" }}</td>
             <td class="px-6 py-4">
               <span class="px-2 py-1 rounded-full text-xs font-medium 

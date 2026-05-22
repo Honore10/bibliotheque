@@ -19,6 +19,7 @@ urlpatterns = [
 
     # Actions: reserver, favoris, notifications marque lu, messages send, prolonger emprunt
     path("action/reserve/", views.action_reserve, name="action_reserve"),
+    path("membre/reserver/<int:id_livre>/", views.membre_reserver_livre, name="membre_reserver_livre"),
     path("action/reservation/cancel/<int:id_reservation>/", views.action_cancel_reservation, name="action_cancel_reservation"),
     path("action/favori/add/", views.action_add_favori, name="action_add_favori"),
     path("action/favori/delete/<int:id_livre>/", views.action_delete_favori, name="action_delete_favori"),
