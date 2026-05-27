@@ -1,0 +1,35 @@
+{% extends "base_minimal.html" %}
+{% block title %}Mettre à jour la sanction{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <aside class="lg:col-span-3">{% include "staff/_sidebar.html" with active="sanctions" %}</aside>
+  <section class="lg:col-span-9 space-y-6">
+    <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+      <div class="flex items-center gap-4">
+        <a href="{% url 'staff_sanction_detail' sanction.id_sanction %}" class="text-gray-500 hover:text-gray-700"><i class="fas fa-arrow-left"></i></a>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Mettre à jour le statut</h1>
+          <p class="text-gray-500 mt-1">Sanction #{{ sanction.id_sanction }} - {{ sanction.type_sanction }}</p>
+        </div>
+      </div>
+    </div>
+
+    <form method="post" class="bg-white shadow-sm rounded-xl border border-gray-200 p-6 space-y-6">
+      {% csrf_token %}
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+        <select name="statut" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          {% for statut in statuts %}
+          <option value="{{ statut }}" {% if sanction.statut == statut %}selected{% endif %}>{{ statut }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="flex justify-end gap-4 pt-4 border-t">
+        <a href="{% url 'staff_sanction_detail' sanction.id_sanction %}" class="px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">Annuler</a>
+        <button type="submit" class="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">Mettre à jour</button>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}
